@@ -15,14 +15,17 @@ const Memories = async ({ memory }: { memory: Memory }) => {
 
   return (
     <div className="my-5 w-full">
-      <div className="flex justify-between items-center mb-5">
+      <a
+        href={`/user/${memory.userId}`}
+        className="flex justify-between items-center mb-5"
+      >
         <p className="font-semibold">@{postUser?.name}</p>
         <img
           src={postUser?.img}
           alt="user"
           className="w-7 h-7 rounded-full object-contain select-none"
         />
-      </div>
+      </a>
       <MemorySlider memory={memory} />
       <p className="text-slate-800 text-lg mt-2">{memory.title}</p>
       {memory.location ? (

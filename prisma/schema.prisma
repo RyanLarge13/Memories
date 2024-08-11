@@ -34,15 +34,15 @@ model Comment {
   memoryId String
   text String
   createdAt DateTime @default(now())
-  memory Memory @relation(fields: [memoryId], references: [id])
+  memory Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
 
 model UserSettings {
   id String @id @unique @default(uuid())
-  userId String
+  userId String @unique
   title String?
-  from String?
+  location String?
   bio String?
   link String?
   followers String[]

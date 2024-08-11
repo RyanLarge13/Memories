@@ -104,6 +104,7 @@ export const getUserFromClerk = async (userId: string) => {
 export const getUsersPosts = async (userId: string) => {
   const usersPosts = await prisma.memory.findMany({
     where: { userId: userId },
+    include: { comments: true },
   });
   return usersPosts;
 };
@@ -112,4 +113,71 @@ export const getSinglePost = async (postId: string, userId: string) => {
   const post = await prisma.memory.findUnique({ where: { id: postId } });
   const user = await getUserFromClerk(userId);
   return { post: post, user: user };
+};
+
+export const getUserSettings = async (userId: string) => {
+  if (!userId) {
+    return null;
+  }
+  const userSettings = await prisma.userSettings.findUnique({
+    where: { userId },
+  });
+  if (!userSettings) {
+    return null;
+  }
+  return userSettings;
+};
+
+const createUserSettings = async (data: {
+  userId: string;
+  location: string | null;
+  title: string | null;
+  bio: string | null;
+  link: string | null;
+  followers: string[];
+  following: string[];
+}) => {
+  const newSettings = await prisma.userSettings.create({ data: data });
+  return newSettings;
+};
+
+export const updateSettings = async (data: FormData) => {
+  const username = data.get("username") as string;
+  if (username) {
+    // update clerk
+  }
+  const allFormData = {
+    userId: data.get("id") as string,
+    location: data.get("location") as string | null,
+    title: data.get("title") as string | null,
+    bio: data.get("bio") as string | null,
+    link: data.get("link") as string | null,
+    following: [] as string[],
+    followers: [] as string[],
+  };
+  const userSettings = await getUserSettings(allFormData.userId);
+  if (!userSettings) {
+    const newSettings = await createUserSettings(allFormData);
+    if (!newSettings) {
+      return null;
+    }
+  }
+  if (userSettings) {
+    const updatedSettings = await prisma.userSettings.update({
+      where: { id: userSettings.id },
+      data: {
+        location: allFormData.location
+          ? allFormData.location
+          : userSettings.location,
+        title: allFormData.title ? allFormData.title : userSettings.title,
+        bio: allFormData.bio ? allFormData.bio : userSettings.bio,
+        link: allFormData.link ? allFormData.link : userSettings.link,
+      },
+    });
+    if (updatedSettings) {
+      return updatedSettings;
+    } else {
+      return null;
+    }
+  }
 };

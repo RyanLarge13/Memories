@@ -17,11 +17,13 @@ const New = () => {
   const [desc, setDesc] = useState("");
   const [location, setLocation] = useState("");
   const [date, setDate] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { user } = useUser();
 
   const createNewMemory = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     if (user) {
       const formData = new FormData();
       formData.append("title", title);
@@ -33,7 +35,9 @@ const New = () => {
         formData.append(`images[${index}]`, image);
       });
       const message = await uploadNewMemory(formData);
-      console.log(message);
+      if (message) {
+        setLoading(false);
+      }
     }
   };
 
@@ -107,7 +111,8 @@ const New = () => {
         />
         <button
           type="submit"
-          className="shadow-lg rounded-sm w-full py-3 px-5 mb-10 focus:outline-none focus:border-none focus:bg-slate-100 duration-300 outline-none border-none"
+          disabled={loading}
+          className="shadow-lg disabled:text-slate-400 rounded-sm w-full py-3 px-5 mb-10 focus:outline-none focus:border-none focus:bg-slate-100 duration-300 outline-none border-none"
         >
           Save
         </button>
