@@ -55,6 +55,6 @@ model LikedPhoto {
   id String @id @unique @default(uuid())
   userId String
   memoryId String
-  user UserSettings @relation(fields: [userId], references: [id])
-  memory Memory @relation(fields: [memoryId], references: [id])
+  user UserSettings @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  memory Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
 }

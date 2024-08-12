@@ -64,9 +64,11 @@ const Settings = async () => {
             className="w-full mt-3"
             placeholder={userSettings?.bio || "Give yourself a bio"}
           ></textarea>
-          <SubmitButton text="Update Settings" />
+          <SubmitButton text="Update Settings" styles="" />
         </form>
-        <button className="text-red-400 p-3 px-4">Delete Account</button>
+        <a href="/delete/account" className="text-red-400 p-3 px-4 block">
+          Delete Account
+        </a>
       </section>
     </main>
   );

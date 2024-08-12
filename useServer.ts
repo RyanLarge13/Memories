@@ -1,7 +1,7 @@
 "use server";
 import { PrismaClient } from "@prisma/client";
 import { bucket } from "./lib/googleStorage";
-import { clerkClient } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 const prisma = new PrismaClient();
 
 export const uploadNewMemory = async (data: FormData) => {
@@ -240,5 +240,61 @@ export const unFollowUser = async (
   if (!otherUserUpdate) {
     return false;
   }
+  return true;
+};
+
+export const getLikedPhotos = async (userId: string) => {
+  const likedPhotos = await prisma.likedPhoto.findMany({ where: { userId } });
+  return likedPhotos;
+};
+
+export const likeMemory = async (userId: string, memoryId: string) => {
+  const alreadyLiked = await prisma.likedPhoto.findFirst({
+    where: { userId, memoryId },
+  });
+  const userExists = await prisma.userSettings.findUnique({
+    where: { userId },
+  });
+  if (!userExists) {
+    console.log("No user settings exist");
+    return false;
+  }
+  if (alreadyLiked) {
+    return false;
+  }
+  const likedPhoto = await prisma.likedPhoto.create({
+    data: { userId, memoryId },
+  });
+  if (!likedPhoto) {
+    return false;
+  }
+  return true;
+};
+
+export const unlikeMemory = async (userId: string, memoryId: string) => {
+  const hasLiked = await prisma.likedPhoto.findFirst({
+    where: { userId, memoryId },
+  });
+  if (!hasLiked) {
+    return false;
+  }
+  const unLikedPhoto = await prisma.likedPhoto.delete({
+    where: { id: hasLiked.id },
+  });
+  if (!unLikedPhoto) {
+    return false;
+  }
+  return true;
+};
+
+export const deleteAccount = async () => {
+  const { userId } = auth();
+  if (!userId) {
+    return false;
+  }
+  await clerkClient.users.deleteUser(userId);
+  await prisma.userSettings.delete({ where: { userId } });
+  await prisma.comment.deleteMany({ where: { userId } });
+  await prisma.memory.deleteMany({ where: { userId } });
   return true;
 };

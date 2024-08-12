@@ -1,17 +1,50 @@
 "use client";
+import { likeMemory, unlikeMemory } from "@/useServer";
 import { useUser } from "@clerk/nextjs";
-import { Memory } from "@prisma/client";
-import React, { useState, useRef } from "react";
+import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
+import React, { useState, useRef, useEffect } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { IoHeartOutline } from "react-icons/io5";
+import { IoHeart, IoHeartOutline } from "react-icons/io5";
+
+interface Memory extends MemoryInterface {
+  comments: Comment[];
+  likes: LikedPhoto[];
+}
 
 const MemorySlider = ({ memory }: { memory: Memory }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const [likedLoading, setLikedLoading] = useState(false);
+  const [currentlyLiked, setCurrentlyLiked] = useState(false);
 
   const currentUser = useUser();
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
-  const likePhoto = () => {};
+  useEffect(() => {
+    if (currentUser.user) {
+      const hasLike = memory.likes.some(
+        (like) => like.userId === currentUser?.user?.id
+      );
+      setCurrentlyLiked(hasLike);
+    }
+  }, [currentUser.user]);
+
+  const likePhoto = async () => {
+    setLikedLoading(true);
+    if (currentUser.user) {
+      const newLike = await likeMemory(currentUser.user.id, memory.id);
+      setCurrentlyLiked(newLike);
+    }
+    setLikedLoading(false);
+  };
+
+  const unlikePhoto = async () => {
+    setLikedLoading(true);
+    if (currentUser.user) {
+      const unlike = await unlikeMemory(currentUser.user.id, memory.id);
+      setCurrentlyLiked(!unlike);
+    }
+    setLikedLoading(false);
+  };
 
   return (
     <div
@@ -39,12 +72,23 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
           <FaArrowLeft />
         </div>
       ) : null}
-      <button
-        onClick={() => likePhoto()}
-        className="absolute top-3 left-3 text-xl z-10 text-white font-bold hover:text-red-500 duration-200"
-      >
-        <IoHeartOutline />
-      </button>
+      {currentlyLiked ? (
+        <button
+          disabled={likedLoading}
+          onClick={() => unlikePhoto()}
+          className="absolute top-3 left-3 disabled:text-slate-300 text-xl z-10 text-red-500 font-bold hover:text-red-400 duration-200"
+        >
+          <IoHeart />
+        </button>
+      ) : (
+        <button
+          disabled={likedLoading}
+          onClick={() => likePhoto()}
+          className="absolute top-3 left-3 disabled:text-slate-300 text-xl z-10 text-white font-bold hover:text-red-500 duration-200"
+        >
+          <IoHeartOutline />
+        </button>
+      )}
       {memory.imageUrls.map((url: string) => (
         <img
           key={url}

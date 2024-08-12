@@ -1,6 +1,6 @@
 import React from "react";
 import { getUserFromClerk } from "@/useServer";
-import { Comment, Memory as MemoryInterface } from "@prisma/client";
+import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
 import { FaLocationPin } from "react-icons/fa6";
 import Comments from "@/components/Comments";
 import MemorySlider from "@/components/MemorySlider";
@@ -8,6 +8,7 @@ import NewComments from "@/components/NewComments";
 
 interface Memory extends MemoryInterface {
   comments: Comment[];
+  likes: LikedPhoto[];
 }
 
 const Memories = async ({ memory }: { memory: Memory }) => {
@@ -27,7 +28,12 @@ const Memories = async ({ memory }: { memory: Memory }) => {
         />
       </a>
       <MemorySlider memory={memory} />
-      <p className="text-slate-800 text-lg mt-2">{memory.title}</p>
+      <div className="mt-2 flex justify-between items-center ga-x-10">
+        <p className="text-slate-800 text-lg">{memory.title}</p>
+        <p>
+          <span className="font-bold">{memory.likes.length}</span> likes
+        </p>
+      </div>
       {memory.location ? (
         <div className="mt-1 text-xs flex justify-start items-start gap-x-1">
           <FaLocationPin /> <p>{memory.location}</p>
