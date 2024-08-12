@@ -141,6 +141,13 @@ const createUserSettings = async (data: {
   return newSettings;
 };
 
+export const createDefaultSettings = async (userId: string) => {
+  const newSettings = await prisma.userSettings.create({
+    data: { userId: userId },
+  });
+  return newSettings;
+};
+
 export const updateSettings = async (data: FormData) => {
   const username = data.get("username") as string;
   if (username) {
@@ -180,4 +187,58 @@ export const updateSettings = async (data: FormData) => {
       return null;
     }
   }
+};
+
+export const followUser = async (userToFollow: string, currentUser: string) => {
+  const update = await prisma.userSettings.update({
+    where: { userId: userToFollow },
+    data: { followers: { push: currentUser } },
+  });
+  const otherUpdate = await prisma.userSettings.update({
+    where: { userId: currentUser },
+    data: { following: { push: userToFollow } },
+  });
+  if (!update || !otherUpdate) {
+    return false;
+  }
+  return true;
+};
+
+export const unFollowUser = async (
+  userToFollow: string,
+  currentUser: string
+) => {
+  const user = await prisma.userSettings.findUnique({
+    where: { userId: userToFollow },
+  });
+  if (!user) {
+    return false;
+  }
+  const newFollowers = user.followers.filter(
+    (follow) => follow !== currentUser
+  );
+  const update = await prisma.userSettings.update({
+    where: { userId: userToFollow },
+    data: { followers: newFollowers },
+  });
+  if (!update) {
+    return false;
+  }
+  const otherUser = await prisma.userSettings.findUnique({
+    where: { userId: currentUser },
+  });
+  if (!otherUser) {
+    return false;
+  }
+  const newFollowing = otherUser.following.filter(
+    (follow) => follow !== userToFollow
+  );
+  const otherUserUpdate = await prisma.userSettings.update({
+    where: { userId: currentUser },
+    data: { following: newFollowing },
+  });
+  if (!otherUserUpdate) {
+    return false;
+  }
+  return true;
 };

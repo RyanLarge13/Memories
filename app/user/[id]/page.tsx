@@ -5,6 +5,7 @@ import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import React from "react";
 import { FaLink } from "react-icons/fa";
+import { FaLocationPin } from "react-icons/fa6";
 
 const User = async ({ params }: { params: { id: string } }) => {
   const id = params.id;
@@ -36,10 +37,13 @@ const User = async ({ params }: { params: { id: string } }) => {
           </div>
           <div className="text-left w-full px-5">
             <p className="text-sm text-slate-700">{userSettings?.title}</p>
-            <p>{userSettings?.location}</p>
+            <p className="flex justify-start items-center gap-x-1">
+              <FaLocationPin className="text-xs" /> {userSettings?.location}
+            </p>
             {userSettings?.link ? (
               <a
                 href={userSettings.link}
+                target="_blank"
                 className="text-sm text-sky-700 font-bold flex justify-start items-center"
               >
                 <FaLink className="mr-1" />{" "}
@@ -52,9 +56,17 @@ const User = async ({ params }: { params: { id: string } }) => {
           </div>
           {appUser ? (
             userSettings?.followers.includes(appUser.id) ? (
-              <FollowBtn following={true} />
+              <FollowBtn
+                following={true}
+                userToFollow={id}
+                currentUser={appUser.id}
+              />
             ) : (
-              <FollowBtn following={false} />
+              <FollowBtn
+                following={false}
+                userToFollow={id}
+                currentUser={appUser.id}
+              />
             )
           ) : null}
         </div>

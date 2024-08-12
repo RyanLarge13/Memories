@@ -1,4 +1,5 @@
 "use client";
+import { useUser } from "@clerk/nextjs";
 import { Memory } from "@prisma/client";
 import React, { useState, useRef } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
@@ -7,6 +8,10 @@ import { IoHeartOutline } from "react-icons/io5";
 const MemorySlider = ({ memory }: { memory: Memory }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const currentUser = useUser();
+
+  const likePhoto = () => {};
 
   return (
     <div
@@ -34,7 +39,10 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
           <FaArrowLeft />
         </div>
       ) : null}
-      <button className="absolute top-3 left-3 text-xl z-10 text-white font-bold hover:text-red-500 duration-200">
+      <button
+        onClick={() => likePhoto()}
+        className="absolute top-3 left-3 text-xl z-10 text-white font-bold hover:text-red-500 duration-200"
+      >
         <IoHeartOutline />
       </button>
       {memory.imageUrls.map((url: string) => (
