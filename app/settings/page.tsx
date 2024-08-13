@@ -1,8 +1,15 @@
 import SubmitButton from "@/components/SubmitButton";
 import { getUserSettings, updateSettings } from "@/useServer";
 import { currentUser } from "@clerk/nextjs/server";
+import { Metadata } from "next";
 import React from "react";
 import { FaInfo } from "react-icons/fa";
+
+export const metadata: Metadata = {
+  title: "Memory Settings",
+  description:
+    "Memories user settings page. Configure your account and update your profile",
+};
 
 const Settings = async () => {
   const user = await currentUser();
@@ -20,6 +27,7 @@ const Settings = async () => {
           your public profile
         </p>
         <form action={updateSettings} className="mt-5">
+          {/* Use .bind instead of hidden inputs to include encoded data to form submission and progressive enhancements */}
           <input
             type="hidden"
             className="hidden"

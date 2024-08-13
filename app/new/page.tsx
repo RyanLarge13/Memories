@@ -1,6 +1,7 @@
 "use client";
 import { uploadNewMemory } from "@/useServer";
 import { useUser } from "@clerk/nextjs";
+import { Metadata } from "next";
 import React, {
   ChangeEvent,
   Dispatch,
@@ -9,6 +10,11 @@ import React, {
   useState,
 } from "react";
 import { LuImagePlus } from "react-icons/lu";
+
+export const metadata: Metadata = {
+  title: "New Memory",
+  description: "Create a new memory to share with the world",
+};
 
 const New = () => {
   const [images, setImages]: [File[], Dispatch<SetStateAction<File[]>>] =

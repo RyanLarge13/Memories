@@ -2,10 +2,25 @@ import FollowBtn from "@/components/FollowBtn";
 import UserMemories from "@/components/UserMemories";
 import { getUserSettings, getUsersPosts } from "@/useServer";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import { Metadata } from "next";
 import Image from "next/image";
 import React from "react";
 import { FaLink } from "react-icons/fa";
 import { FaLocationPin } from "react-icons/fa6";
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> => {
+  const id = params.id;
+  const user = await clerkClient.users.getUser(id);
+  const userSettings = await getUserSettings(user.id);
+  return {
+    title: `@${user.firstName}${user.lastName}`,
+    description: userSettings?.bio,
+  };
+};
 
 const User = async ({ params }: { params: { id: string } }) => {
   const id = params.id;

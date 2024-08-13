@@ -6,6 +6,7 @@ import Nav from "@/components/Nav";
 export const metadata: Metadata = {
   title: "Memories",
   description: "Share your memories with the whole world as your audience",
+  icons: ["/public/assets/logo.svg"],
 };
 
 export default function RootLayout({

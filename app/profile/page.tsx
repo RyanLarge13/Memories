@@ -5,10 +5,26 @@ import {
   createDefaultSettings,
 } from "@/useServer";
 import { currentUser } from "@clerk/nextjs/server";
+import { Metadata } from "next";
 import Image from "next/image";
 import React from "react";
 import { FaLink } from "react-icons/fa";
 import { FaLocationPin } from "react-icons/fa6";
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const user = await currentUser();
+  if (!user) {
+    return {
+      title: "Profile",
+      description: "Welcome to your profile on Memory!",
+    };
+  }
+  const userSettings = await getUserSettings(user.id);
+  return {
+    title: `@${user?.firstName}${user?.lastName}`,
+    description: userSettings?.bio,
+  };
+};
 
 const Profile = async () => {
   const user = await currentUser();
