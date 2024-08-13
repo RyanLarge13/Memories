@@ -1,7 +1,8 @@
 "use client";
 import { uploadNewMemory } from "@/useServer";
 import { useUser } from "@clerk/nextjs";
-import { Metadata } from "next";
+// import { Metadata } from "next";
+import { useRouter } from "next/navigation";
 import React, {
   ChangeEvent,
   Dispatch,
@@ -9,12 +10,13 @@ import React, {
   SetStateAction,
   useState,
 } from "react";
+import { FaTrash } from "react-icons/fa";
 import { LuImagePlus } from "react-icons/lu";
 
-export const metadata: Metadata = {
-  title: "New Memory",
-  description: "Create a new memory to share with the world",
-};
+// export const metadata: Metadata = {
+//   title: "New Memory",
+//   description: "Create a new memory to share with the world",
+// };
 
 const New = () => {
   const [images, setImages]: [File[], Dispatch<SetStateAction<File[]>>] =
@@ -26,6 +28,7 @@ const New = () => {
   const [loading, setLoading] = useState(false);
 
   const { user } = useUser();
+  const router = useRouter();
 
   const createNewMemory = async (e: FormEvent) => {
     e.preventDefault();
@@ -43,6 +46,7 @@ const New = () => {
       const message = await uploadNewMemory(formData);
       if (message) {
         setLoading(false);
+        router.push("/");
       }
     }
   };
@@ -64,12 +68,21 @@ const New = () => {
         <div className="flex justify-start items-center gap-x-5 w-full overflow-x-auto mb-10 py-5">
           {images.length > 0
             ? images.map((image, index) => (
-                <img
-                  key={index}
-                  src={URL.createObjectURL(image)}
-                  alt={`${index}`}
-                  className="object-cover w-80 min-w-80 max-w-80 min-h-80 max-h-80 h-80 rounded-lg shadow-md"
-                />
+                <div key={index} className="relative">
+                  <button
+                    onClick={() =>
+                      setImages((prev) => prev.filter((img) => img !== img))
+                    }
+                    className="absolute z-10 top-3 right-3 text-red-400 text-xl"
+                  >
+                    <FaTrash />
+                  </button>
+                  <img
+                    src={URL.createObjectURL(image)}
+                    alt={`${index}`}
+                    className="object-cover w-80 min-w-80 max-w-80 min-h-80 max-h-80 h-80 rounded-lg shadow-md"
+                  />
+                </div>
               ))
             : null}
         </div>
