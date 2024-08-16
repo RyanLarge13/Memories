@@ -66,7 +66,6 @@ const Settings = async () => {
           <textarea
             rows={4}
             maxLength={200}
-            dirName="bio"
             id="bio"
             name="bio"
             className="w-full mt-3"

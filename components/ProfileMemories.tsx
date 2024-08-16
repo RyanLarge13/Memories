@@ -16,7 +16,13 @@ type PostModal = {
   post: Memory | null;
 };
 
-const ProfileMemories = ({ posts }: { posts: Memory[] }) => {
+const ProfileMemories = ({
+  posts,
+  children,
+}: {
+  posts: Memory[];
+  children: React.ReactNode;
+}) => {
   const [userFeed, setUserFeed] = useState(false);
   const [postModal, setPostModal]: [
     PostModal,
@@ -121,21 +127,7 @@ const ProfileMemories = ({ posts }: { posts: Memory[] }) => {
           </div>
         </>
       ) : null}
-      {userFeed ? (
-        <section className="fixed inset-0 z-40 bg-white">
-          {posts.map((post) => (
-            <>
-              <div className="flex justify-end items-center">
-                <button className="text-red-400">
-                  <FaTrash />
-                </button>
-              </div>
-              {/* <Memories key={post.id} memory={post} /> */}
-              {/* Above component will need to change or restructuring will need to occur for client side /server side handling separation */}
-            </>
-          ))}
-        </section>
-      ) : null}
+      {userFeed ? children : null}
     </div>
   );
 };

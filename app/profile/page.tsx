@@ -1,3 +1,4 @@
+import Memories from "@/components/Memories";
 import ProfileMemories from "@/components/ProfileMemories";
 import {
   getUserSettings,
@@ -8,7 +9,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import Image from "next/image";
 import React from "react";
-import { FaLink } from "react-icons/fa";
+import { FaLink, FaTrash } from "react-icons/fa";
 import { FaLocationPin } from "react-icons/fa6";
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -78,7 +79,21 @@ const Profile = async () => {
           {settings?.bio ? <p className="mt-1">"{settings?.bio}"</p> : null}
         </div>
       </div>
-      <ProfileMemories posts={posts} />
+      <ProfileMemories posts={posts}>
+        <section className="fixed inset-0 z-40 bg-white p-3">
+          {posts.map((post) => (
+            <>
+              {/* Maybe in the future allow users to delete their own stuff from this view ??? */}
+              {/* <div className="flex justify-end items-center">
+                <button className="text-red-400">
+                  <FaTrash />
+                </button>
+              </div> */}
+              <Memories key={post.id} memory={post} />
+            </>
+          ))}
+        </section>
+      </ProfileMemories>
     </section>
   );
 };
