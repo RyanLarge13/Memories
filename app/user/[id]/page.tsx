@@ -4,6 +4,7 @@ import { getUserSettings, getUsersPosts } from "@/useServer";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import React from "react";
 import { FaLink } from "react-icons/fa";
 import { FaLocationPin } from "react-icons/fa6";
@@ -25,8 +26,12 @@ export const generateMetadata = async ({
 const User = async ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const user = await clerkClient.users.getUser(id);
+  const currentAuthUser = await currentUser();
   if (!id || !user) {
     return <p>No profile found!</p>;
+  }
+  if (currentAuthUser && currentAuthUser.id === user.id) {
+    redirect("/profile");
   }
 
   const userMemories = await getUsersPosts(id);

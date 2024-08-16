@@ -24,6 +24,7 @@ const NewComments = ({ memoryId }: { memoryId: string }) => {
       );
       if (newComment) {
         setLoading(false);
+        setNewCommentText("");
         setNewComments((prev: Comment[]) => [...prev, newComment]);
       }
     }

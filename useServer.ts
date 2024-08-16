@@ -1,7 +1,7 @@
 "use server";
 import { PrismaClient } from "@prisma/client";
 import { bucket } from "./lib/googleStorage";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 const prisma = new PrismaClient();
 
 export const uploadNewMemory = async (data: FormData) => {
@@ -65,14 +65,56 @@ export const uploadNewMemory = async (data: FormData) => {
   return { message: "Files uploaded successfully" };
 };
 
-export const deleteMemory = async (data: FormData) => {
-  const memoryId = data.get("memoryId") as String;
-  const userId = data.get("userId") as String;
-  const imageUrls = data.get("urls") as String;
-  console.log(imageUrls);
+const deleteImages = async (imageUrls: string[]) => {
+  try {
+    const deleteAllImages = imageUrls.map((img) => {
+      const fileName = img.split("/").pop();
+      if (!fileName) {
+        return new Promise((_, rej) => rej());
+      }
+      const file = bucket.file(fileName);
+      return file.delete();
+    });
+    await Promise.all(deleteAllImages);
+  } catch (err) {
+    console.log(`Error deleting images: ${err}`);
+  }
 };
 
-export const removePost = async (postId: string) => {};
+export const removePost = async (postId: string) => {
+  const memory = await prisma.memory.findUnique({ where: { id: postId } });
+  const user = await currentUser();
+  if (!memory) {
+    return {
+      message: "Deleting your Memory failed, there is no Memory to delete",
+      success: false,
+    };
+  }
+  if (!user) {
+    return {
+      message: "You need to sign in before you can delete this Memory",
+      success: false,
+    };
+  }
+  if (memory.userId !== user.id) {
+    return {
+      message: "You are not authorized to delete this Memory",
+      success: false,
+    };
+  }
+  const imageUrls = memory.imageUrls;
+  try {
+    await deleteImages(imageUrls);
+  } catch (err) {
+    console.log(`Error deleting all images ${err}`);
+    return { message: "failed to delete your images", success: false };
+  }
+  const deletedMemory = await prisma.memory.delete({ where: { id: postId } });
+  if (!deletedMemory) {
+    return { message: "Failed to delete your Memory", success: false };
+  }
+  return { message: "Successfully deleted your Memory", success: true };
+};
 
 export const postNewComment = async (
   userId: string | undefined,
@@ -104,13 +146,16 @@ export const getUserFromClerk = async (userId: string) => {
 export const getUsersPosts = async (userId: string) => {
   const usersPosts = await prisma.memory.findMany({
     where: { userId: userId },
-    include: { comments: true },
+    include: { comments: true, likes: true },
   });
   return usersPosts;
 };
 
 export const getSinglePost = async (postId: string, userId: string) => {
-  const post = await prisma.memory.findUnique({ where: { id: postId } });
+  const post = await prisma.memory.findUnique({
+    where: { id: postId },
+    include: { comments: true, likes: true },
+  });
   const user = await getUserFromClerk(userId);
   return { post: post, user: user };
 };
@@ -287,9 +332,28 @@ export const unlikeMemory = async (userId: string, memoryId: string) => {
   return true;
 };
 
+const removeAllImages = async (userId: string) => {
+  const memories = await prisma.memory.findMany({ where: { userId } });
+  if (!memories) {
+    return false;
+  }
+  const imageUrls = memories.flatMap((mem) => mem.imageUrls);
+  try {
+    await deleteImages(imageUrls);
+    return true;
+  } catch (err) {
+    console.log(`Error deleting your images: ${err}`);
+    return false;
+  }
+};
+
 export const deleteAccount = async () => {
   const { userId } = auth();
   if (!userId) {
+    return false;
+  }
+  const removedImages = await removeAllImages(userId);
+  if (!removedImages) {
     return false;
   }
   await clerkClient.users.deleteUser(userId);
