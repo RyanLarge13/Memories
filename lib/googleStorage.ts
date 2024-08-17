@@ -1,8 +1,18 @@
 import { Storage } from "@google-cloud/storage";
 import path from "path";
 
-const credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const mode = process.env.PROD;
+if (!mode) {
+  throw new Error("Cannot access production variable");
+}
 
+let credentials;
+if (mode === "dev") {
+  credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+}
+if (mode === "prod") {
+  credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+}
 if (!credentials) {
   throw new Error("Could not access storage bucket credentials");
 }
