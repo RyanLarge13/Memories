@@ -1,4 +1,5 @@
 import FollowBtn from "@/components/FollowBtn";
+import Memories from "@/components/Memories";
 import UserMemories from "@/components/UserMemories";
 import { getUserSettings, getUsersPosts } from "@/useServer";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
@@ -90,7 +91,13 @@ const User = async ({ params }: { params: { id: string } }) => {
             )
           ) : null}
         </div>
-        <UserMemories posts={userMemories} />
+        <UserMemories posts={userMemories}>
+          <section className="fixed inset-0 z-40 bg-white p-3">
+            {userMemories.map((post) => (
+              <Memories key={post.id} memory={post} />
+            ))}
+          </section>
+        </UserMemories>
       </section>
     </main>
   );

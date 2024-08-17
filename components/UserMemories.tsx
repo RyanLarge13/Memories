@@ -1,12 +1,40 @@
+"use client";
 import { Comment, Memory as MemoryInterface } from "@prisma/client";
 import SimpleMemory from "@/components/SimpleMemory";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Memory extends MemoryInterface {
   comments: Comment[];
 }
 
-const UserMemories = ({ posts }: { posts: Memory[] }) => {
+const UserMemories = ({
+  posts,
+  children,
+}: {
+  posts: Memory[];
+  children: React.ReactNode;
+}) => {
+  const [userFeed, setUserFeed] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleBack = (e: PopStateEvent) => {
+      if (userFeed) {
+        e.preventDefault();
+        setUserFeed(false);
+      }
+      if (!userFeed) {
+        router.back();
+      }
+    };
+    window.addEventListener("popstate", handleBack);
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+    };
+  }, [userFeed, router]);
+
   return (
     <div className="mt-10">
       {posts.length < 1 ? (
@@ -22,12 +50,13 @@ const UserMemories = ({ posts }: { posts: Memory[] }) => {
       ) : (
         <div className="grid grid-cols-3">
           {posts.map((post) => (
-            <div key={post.id}>
+            <button key={post.id} onClick={() => setUserFeed(true)}>
               <SimpleMemory key={post.id} img={post.imageUrls[0]} />
-            </div>
+            </button>
           ))}
         </div>
       )}
+      {userFeed ? children : null}
     </div>
   );
 };
