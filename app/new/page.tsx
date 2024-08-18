@@ -46,6 +46,8 @@ const New = () => {
       const message = await uploadNewMemory(formData);
       if (message) {
         console.log(message.message);
+        (document.getElementById("images") as HTMLInputElement).value = "";
+        setImages([]);
         setLoading(false);
         router.push("/");
       }
@@ -53,6 +55,8 @@ const New = () => {
         console.log("Error uploading from the server!");
         console.log(message.message);
       }
+      (document.getElementById("images") as HTMLInputElement).value = "";
+      setImages([]);
     }
   };
 
