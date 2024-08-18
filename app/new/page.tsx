@@ -65,7 +65,12 @@ const New = () => {
       const files: File[] = Array.from(e.target.files);
       try {
         const compressedFiles = await Promise.all(
-          files.map((aFile) => imageCompression(aFile, { maxSizeMB: 1 }))
+          files.map(async (aFile) => {
+            const compressedFile = await imageCompression(aFile, {
+              maxSizeMB: 1,
+            });
+            return new File([compressedFile], aFile.name, { type: aFile.type });
+          })
         );
         setImages((prev): File[] => [...compressedFiles, ...prev]);
       } catch (err) {
