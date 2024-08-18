@@ -45,8 +45,13 @@ const New = () => {
       });
       const message = await uploadNewMemory(formData);
       if (message) {
+        console.log(message.message);
         setLoading(false);
         router.push("/");
+      }
+      if (message.err) {
+        console.log("Error uploading from the server!");
+        console.log(message.message);
       }
     }
   };
