@@ -12,7 +12,7 @@ import React, {
 } from "react";
 import { FaTrash } from "react-icons/fa";
 import { LuImagePlus } from "react-icons/lu";
-
+import imageCompression from "browser-image-compression";
 // export const metadata: Metadata = {
 //   title: "New Memory",
 //   description: "Create a new memory to share with the world",
@@ -56,10 +56,17 @@ const New = () => {
     }
   };
 
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files: File[] = Array.from(e.target.files);
-      setImages((prev): File[] => [...files, ...prev]);
+      try {
+        const compressedFiles = await Promise.all(
+          files.map((aFile) => imageCompression(aFile, { maxSizeMB: 1 }))
+        );
+        setImages((prev): File[] => [...compressedFiles, ...prev]);
+      } catch (err) {
+        console.log(`Could not compress images. Error: ${err}`);
+      }
     }
   };
 
