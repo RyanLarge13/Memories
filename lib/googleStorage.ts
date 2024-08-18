@@ -44,4 +44,8 @@ if (!storage) {
 const bucketName = "memory-images-bucket";
 const bucket = storage.bucket(bucketName);
 
+if (!bucket) {
+  throw new Error("Failed to initialize your bucket");
+}
+
 export { bucket };

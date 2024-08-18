@@ -5,64 +5,85 @@ import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 const prisma = new PrismaClient();
 
 export const uploadNewMemory = async (data: FormData) => {
-  const title = data.get("title") as string;
-  const desc = data.get("desc") as string;
-  const userId = data.get("userId") as string;
-  const date = data.get("date") as string;
-  const location = data.get("location") as string;
-  const fileUrls: string[] = [];
-  for (const [key, value] of data.entries()) {
-    if (value instanceof File) {
-      const file = value as File;
-      const fileName = file.name;
-      const fileUpload = bucket.file(fileName);
-      try {
-        await new Promise<void>(async (resolve, reject) => {
-          const stream = fileUpload.createWriteStream({
-            metadata: {
-              contentType: file.type,
-            },
-          });
-          stream.on("error", (err) => {
-            console.error("Error uploading file:", err);
-            reject(err);
-          });
-          stream.on("finish", async () => {
-            try {
-              await fileUpload.makePublic();
-              const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-              fileUrls.push(fileUrl);
-              resolve();
-            } catch (err) {
-              console.error("Error making file public:", err);
+  try {
+    const title = data.get("title") as string;
+    const desc = data.get("desc") as string;
+    const userId = data.get("userId") as string;
+    const date = data.get("date") as string;
+    const location = data.get("location") as string;
+    const fileUrls: string[] = [];
+    for (const [_, value] of data.entries()) {
+      if (value instanceof File) {
+        const file = value as File;
+        const fileName = file.name;
+        const fileUpload = bucket.file(fileName);
+        try {
+          await new Promise<void>(async (resolve, reject) => {
+            const stream = fileUpload.createWriteStream({
+              metadata: {
+                contentType: file.type,
+              },
+            });
+            stream.on("error", (err) => {
+              console.error("Error uploading file:", err);
               reject(err);
-            }
-          });
+              return {
+                message: `Error uploading image to bucket \n// ${err}`,
+                err: true,
+              };
+            });
+            stream.on("finish", async () => {
+              try {
+                await fileUpload.makePublic();
+                const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+                fileUrls.push(fileUrl);
+                resolve();
+              } catch (err) {
+                console.error("Error making file public:", err);
+                reject(err);
+              }
+            });
 
-          stream.end(Buffer.from(await file.arrayBuffer()));
-        });
-      } catch (err) {
-        console.error("Error handling file:", err);
+            stream.end(Buffer.from(await file.arrayBuffer()));
+          });
+        } catch (err) {
+          console.error("Error handling file:", err);
+          return { message: `Error with handling file \n// ${err}`, err: true };
+        }
       }
     }
-  }
-  try {
-    await prisma.memory.create({
-      data: {
-        userId,
-        title,
-        desc,
-        when: new Date(date) || new Date(),
-        location: location,
-        imageUrls: {
-          set: fileUrls,
+    try {
+      const newMemory = await prisma.memory.create({
+        data: {
+          userId,
+          title,
+          desc,
+          when: new Date(date) || new Date(),
+          location: location,
+          imageUrls: {
+            set: fileUrls,
+          },
         },
-      },
-    });
+      });
+      if (!newMemory) {
+        console.log("No new memory, failed to insert new memory in prisma");
+        return {
+          message: "Memory failed to insert to prisma DB \n// no info",
+          err: true,
+        };
+      }
+      return { message: "New memory uploaded successfully", err: false };
+    } catch (err) {
+      console.error("Error creating memory record:", err);
+      return {
+        message: `Could not connect to the server, please try again \n// ${err}`,
+        err: true,
+      };
+    }
   } catch (err) {
-    console.error("Error creating memory record:", err);
+    console.log(err);
+    return { message: `Failed to upload memory \n// ${err}`, err: true };
   }
-  return { message: "Files uploaded successfully" };
 };
 
 const deleteImages = async (imageUrls: string[]) => {
