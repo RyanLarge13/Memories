@@ -2,6 +2,7 @@
 import { PrismaClient } from "@prisma/client";
 import { bucket } from "./lib/googleStorage";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 const prisma = new PrismaClient();
 
 export const uploadNewMemory = async (data: FormData) => {
@@ -27,6 +28,7 @@ export const uploadNewMemory = async (data: FormData) => {
             stream.on("error", (err) => {
               console.error("Error uploading file:", err);
               reject(err);
+              revalidatePath("/new");
               return {
                 message: `Error uploading image to bucket \n// ${err}`,
                 err: true,
@@ -48,6 +50,7 @@ export const uploadNewMemory = async (data: FormData) => {
           });
         } catch (err) {
           console.error("Error handling file:", err);
+          revalidatePath("/new");
           return { message: `Error with handling file \n// ${err}`, err: true };
         }
       }
@@ -67,14 +70,17 @@ export const uploadNewMemory = async (data: FormData) => {
       });
       if (!newMemory) {
         console.log("No new memory, failed to insert new memory in prisma");
+        revalidatePath("/new");
         return {
           message: "Memory failed to insert to prisma DB \n// no info",
           err: true,
         };
       }
+      revalidatePath("/new");
       return { message: "New memory uploaded successfully", err: false };
     } catch (err) {
       console.error("Error creating memory record:", err);
+      revalidatePath("/new");
       return {
         message: `Could not connect to the server, please try again \n// ${err}`,
         err: true,
