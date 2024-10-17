@@ -9,7 +9,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import Image from "next/image";
 import React from "react";
-import { FaLink, FaTrash } from "react-icons/fa";
+import { FaLink } from "react-icons/fa";
 import { FaLocationPin } from "react-icons/fa6";
 
 export const generateMetadata = async (): Promise<Metadata> => {

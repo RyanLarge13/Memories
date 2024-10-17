@@ -35,8 +35,8 @@ const ProfileMemories = ({
 
   useEffect(() => {
     const handleBack = (e: PopStateEvent) => {
+      e.preventDefault();
       if (userFeed) {
-        e.preventDefault();
         setUserFeed(false);
       }
       if (!userFeed) {
