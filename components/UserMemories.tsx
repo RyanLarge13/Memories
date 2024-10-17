@@ -2,7 +2,6 @@
 import { Comment, Memory as MemoryInterface } from "@prisma/client";
 import SimpleMemory from "@/components/SimpleMemory";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 interface Memory extends MemoryInterface {
   comments: Comment[];
@@ -17,8 +16,6 @@ const UserMemories = ({
 }) => {
   const [userFeed, setUserFeed] = useState(false);
 
-  const router = useRouter();
-
   useEffect(() => {
     const handleBack = (e: PopStateEvent) => {
       if (userFeed) {
@@ -26,14 +23,14 @@ const UserMemories = ({
         setUserFeed(false);
       }
       if (!userFeed) {
-        router.back();
+        return;
       }
     };
     window.addEventListener("popstate", handleBack);
     return () => {
       window.removeEventListener("popstate", handleBack);
     };
-  }, [userFeed, router]);
+  }, [userFeed]);
 
   return (
     <div className="mt-10">

@@ -2,7 +2,6 @@
 import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
 import SimpleMemory from "@/components/SimpleMemory";
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { FaEdit, FaHeart, FaTrash } from "react-icons/fa";
 import { removePost } from "@/useServer";
 import BackDrop from "./BackDrop";
@@ -31,23 +30,21 @@ const ProfileMemories = ({
   ] = useState<PostModal>({ show: false, post: null });
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const router = useRouter();
-
   useEffect(() => {
     const handleBack = (e: PopStateEvent) => {
-      e.preventDefault();
       if (userFeed) {
+        e.preventDefault();
         setUserFeed(false);
       }
       if (!userFeed) {
-        router.back();
+        return;
       }
     };
     window.addEventListener("popstate", handleBack);
     return () => {
       window.removeEventListener("popstate", handleBack);
     };
-  }, [userFeed, router]);
+  }, [userFeed]);
 
   const closeOpenModal = () => {
     setPostModal({ show: false, post: null });
