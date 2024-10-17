@@ -80,7 +80,7 @@ const Profile = async () => {
         </div>
       </div>
       <ProfileMemories posts={posts}>
-        <section className="fixed inset-0 z-40 bg-white p-3">
+        <section className="fixed inset-0 z-40 bg-white p-3 overflow-y-auto py-10">
           {posts.map((post) => (
             <Memories key={post.id} memory={post} />
           ))}
