@@ -16,6 +16,8 @@
 
 Memories is an Instagram-like web application where users can upload, view, and share their memories. The app is built using Next.js with React, server-actions, Prisma ORM for database management, Google Cloud Storage for file uploads, and Clerk for user authentication. It leverages React Suspense for data fetching and caching static data through Next.js pre-rendering techniques to ensure a fast and seamless user experience.
 
+<img src="public/assets/Mobile_Screen_Shot.jpg"  alt="mobile" />
+
 ## Features
 
 - **User Authentication**: Users can sign up, log in, and manage their accounts using Clerk.
