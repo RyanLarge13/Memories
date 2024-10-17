@@ -92,7 +92,7 @@ const User = async ({ params }: { params: { id: string } }) => {
           ) : null}
         </div>
         <UserMemories posts={userMemories}>
-          <section className="fixed inset-0 z-40 bg-white p-3">
+          <section className="fixed inset-0 z-40 bg-white p-3 overflow-y-auto py-10">
             {userMemories.map((post) => (
               <Memories key={post.id} memory={post} />
             ))}

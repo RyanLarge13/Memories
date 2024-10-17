@@ -82,15 +82,7 @@ const Profile = async () => {
       <ProfileMemories posts={posts}>
         <section className="fixed inset-0 z-40 bg-white p-3">
           {posts.map((post) => (
-            <>
-              {/* Maybe in the future allow users to delete their own stuff from this view ??? */}
-              {/* <div className="flex justify-end items-center">
-                <button className="text-red-400">
-                  <FaTrash />
-                </button>
-              </div> */}
-              <Memories key={post.id} memory={post} />
-            </>
+            <Memories key={post.id} memory={post} />
           ))}
         </section>
       </ProfileMemories>
