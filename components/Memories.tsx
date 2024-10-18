@@ -31,7 +31,8 @@ const Memories = async ({ memory }: { memory: Memory }) => {
       <div className="mt-2 flex justify-between items-center ga-x-10">
         <p className="text-slate-800 text-lg">{memory.title}</p>
         <p>
-          <span className="font-bold">{memory.likes.length}</span> likes
+          <span className="font-bold">{memory.likes.length}</span>{" "}
+          {memory.likes.length === 1 ? "like" : "likes"}
         </p>
       </div>
       {memory.location ? (

@@ -79,17 +79,20 @@ Make sure you have the following tools installed:
    Create a `.env` file in the root of your project and add the following variables:
 
    ```
+   #Define production enviornment
+   PROD = dev (or prod if you are deploying)
+
    # Database connection (Prisma)
    DATABASE_URL="your-database-url"
 
    # Google Cloud Storage
-   <!-- GCLOUD_PROJECT_ID="your-google-cloud-project-id"
-   GCLOUD_BUCKET_NAME="your-storage-bucket-name"
-   GCLOUD_KEY="your-service-account-key-json" -->
+   GOOGLE_APPLICATION_CREDENTIALS_JSON = "your-key"
+   GOOGLE_APPLICATION_CREDENTIALS = "your-creds"
 
    # Clerk
-   NEXT_PUBLIC_CLERK_FRONTEND_API="your-clerk-frontend-api"
-   CLERK_API_KEY="your-clerk-api-key"
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "your-key"
+   CLERK_SECRET_KEY = "your-key"
+
    ```
 
 4. **Set Up Prisma:**

@@ -7,8 +7,8 @@ const SimpleMemory = ({ img }: { img: string }) => {
       src={img}
       alt="post"
       className="aspect-square object-cover w-full h-full"
-      width={100}
-      height={100}
+      width={500}
+      height={500}
     />
   );
 };

@@ -8,7 +8,10 @@ const Nav = () => {
     <nav className="p-1 flex items-center justify-center fixed z-40 top-0 right-0 left-0 bg-white">
       <ul className="flex justify-between items-center self-center">
         <li>
-          <a href="/" className="md:hidden px-10">
+          <a
+            href="/"
+            className="md:hidden px-10 duration-200 hover:text-sky-500"
+          >
             <FaImages />
           </a>
           <a
@@ -19,7 +22,10 @@ const Nav = () => {
           </a>
         </li>
         <li>
-          <a href="/profile" className="md:hidden px-10 py-1">
+          <a
+            href="/profile"
+            className="md:hidden px-10 py-1 duration-200 hover:text-sky-500"
+          >
             <FaPerson />
           </a>
           <a
@@ -30,7 +36,10 @@ const Nav = () => {
           </a>
         </li>
         <li>
-          <a href="/settings" className="md:hidden px-10 py-1">
+          <a
+            href="/settings"
+            className="md:hidden px-10 py-1 duration-200 hover:text-sky-500"
+          >
             <FaCog />
           </a>
           <a
@@ -41,7 +50,10 @@ const Nav = () => {
           </a>
         </li>
         <li>
-          <a href="/new" className="md:hidden px-10 py-1">
+          <a
+            href="/new"
+            className="md:hidden px-10 py-1 duration-200 hover:text-sky-500"
+          >
             <FaPlus />
           </a>
           <a
