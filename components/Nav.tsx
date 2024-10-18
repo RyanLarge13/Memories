@@ -2,15 +2,22 @@ import React from "react";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import { FaCog, FaImages, FaPlus } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
+import { headers } from "next/headers";
 
 const Nav = () => {
+  // Setting x-pathname header in root/middleware.ts
+  const reqHeaders = headers();
+  const path = reqHeaders.get("x-pathname") || "/";
+
   return (
     <nav className="p-1 flex items-center justify-center fixed z-40 top-0 right-0 left-0 bg-white">
       <ul className="flex justify-between items-center self-center">
         <li>
           <a
             href="/"
-            className="md:hidden px-10 duration-200 hover:text-sky-500"
+            className={`md:hidden px-10 duration-200 hover:text-sky-700 ${
+              path === "/" ? "text-sky-400" : "text-black"
+            }`}
           >
             <FaImages />
           </a>
@@ -24,7 +31,9 @@ const Nav = () => {
         <li>
           <a
             href="/profile"
-            className="md:hidden px-10 py-1 duration-200 hover:text-sky-500"
+            className={`md:hidden px-10 duration-200 hover:text-sky-700 ${
+              path === "/profile" ? "text-sky-400" : "text-black"
+            }`}
           >
             <FaPerson />
           </a>
@@ -38,7 +47,9 @@ const Nav = () => {
         <li>
           <a
             href="/settings"
-            className="md:hidden px-10 py-1 duration-200 hover:text-sky-500"
+            className={`md:hidden px-10 duration-200 hover:text-sky-700 ${
+              path === "/settings" ? "text-sky-400" : "text-black"
+            }`}
           >
             <FaCog />
           </a>
@@ -52,7 +63,9 @@ const Nav = () => {
         <li>
           <a
             href="/new"
-            className="md:hidden px-10 py-1 duration-200 hover:text-sky-500"
+            className={`md:hidden px-10 duration-200 hover:text-sky-700 ${
+              path === "/new" ? "text-sky-400" : "text-black"
+            }`}
           >
             <FaPlus />
           </a>

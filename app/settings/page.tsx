@@ -26,7 +26,10 @@ const Settings = async () => {
           <FaInfo className="text-xs mr-1" /> This information will be shown on
           your public profile
         </p>
-        <form action={updateSettings} className="mt-5">
+        <form
+          action={updateSettings}
+          className="mt-5 flex flex-col justify-center items-start"
+        >
           {/* Use .bind instead of hidden inputs to include encoded data to form submission and progressive enhancements */}
           <input
             type="hidden"
@@ -68,7 +71,7 @@ const Settings = async () => {
             maxLength={200}
             id="bio"
             name="bio"
-            className="w-full mt-3"
+            className="w-full mt-3 focus:outline-none outline-none focus:shadow-sm focus:shadow-sky-300 duration-200 rounded-sm"
             placeholder={userSettings?.bio || "Give yourself a bio"}
           ></textarea>
           <SubmitButton text="Update Settings" styles="" />

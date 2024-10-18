@@ -16,6 +16,11 @@ const NewComments = ({ memoryId }: { memoryId: string }) => {
 
   const postComment = async () => {
     setLoading(true);
+    if (!newCommentText || newCommentText === "") {
+      setNewCommentText("");
+      setLoading(false);
+      return;
+    }
     if (user) {
       const newComment = await postNewComment(
         user.id,
