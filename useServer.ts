@@ -1,5 +1,5 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
+import { Memory, PrismaClient } from "@prisma/client";
 import { bucket } from "./lib/googleStorage";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -168,6 +168,52 @@ export const getUserFromClerk = async (userId: string) => {
   } else {
     return null;
   }
+};
+
+export const getUserFollowersAndTopPost = async (userId: string) => {
+  const currentUserInfo = await prisma.userSettings.findUnique({
+    where: { userId: userId },
+  });
+
+  console.log(`User information: ${currentUserInfo}`);
+
+  const following: string[] | undefined = currentUserInfo?.following;
+
+  if (!following || following.length < 1) {
+    return { message: "Not following anyone" };
+  }
+
+  console.log(following);
+
+  let followersArray = [];
+
+  console.log(`Following: ${following}`);
+
+  for (let i = 0; i < 10; i++) {
+    if (!following[i]) {
+      continue;
+    }
+    const userInfo = await clerkClient.users.getUser(following[i]);
+
+    const sendableData: { img: string; name: string; latest: null | Memory } = {
+      img: userInfo.imageUrl,
+      name: `@${userInfo.firstName}${userInfo.lastName}`,
+      latest: null,
+    };
+
+    const latestPost = await prisma.memory.findFirst({
+      where: { userId: userInfo.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    console.log(`Latest Post: ${latestPost}`);
+
+    sendableData.latest = latestPost;
+
+    followersArray.push(sendableData);
+  }
+
+  return { message: "Success", users: followersArray };
 };
 
 export const getUsersPosts = async (userId: string) => {

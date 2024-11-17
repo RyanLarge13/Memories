@@ -22,7 +22,9 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
   const [likedLoading, setLikedLoading] = useState(false);
   const [currentlyLiked, setCurrentlyLiked] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [dragStartTriggered, setDragStartTriggered] = useState(false);
   const [dragOffsetX, setDragOffsetX] = useState(0);
+  const [dragOffsetY, setDragOffsetY] = useState(0);
 
   const currentUser = useUser();
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -57,14 +59,30 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
   // Swipe event handlers (pointer events)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLImageElement>) => {
-    e.preventDefault();
     const x = e.clientX;
-    setIsDragging(true);
+    const y = e.clientY;
     setDragOffsetX(x);
+    setDragOffsetY(y);
+    setDragStartTriggered(true);
+    setIsDragging(false);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLImageElement>) => {
-    e.preventDefault();
+    if (!dragStartTriggered) {
+      return;
+    }
+
+    const deltaX = e.clientX - dragOffsetX;
+    const deltaY = e.clientY - dragOffsetY;
+
+    if (!isDragging) {
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        setIsDragging(true);
+      } else {
+        return;
+      }
+    }
+
     if (imageContainerRef.current && isDragging) {
       const children = imageContainerRef.current.children;
       for (let i = 0; i < children.length; i++) {
@@ -79,6 +97,43 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
         }
       }
     }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLImageElement>) => {
+    const deltaX = e.clientX - dragOffsetX;
+    if (isDragging) {
+      let sign = 1;
+      if (deltaX < -75) {
+        if (currentIndex < memory.imageUrls.length - 1) {
+          setCurrentIndex((prev) => prev + 1);
+          sign = 1;
+        }
+      } else if (deltaX > 75) {
+        if (currentIndex > 0) {
+          setCurrentIndex((prev) => prev - 1);
+          sign = -1;
+        }
+      }
+      if (imageContainerRef.current) {
+        setDragOffsetX(
+          imageContainerRef.current.getBoundingClientRect().width *
+            currentIndex +
+            sign
+        );
+      }
+    }
+    setDragStartTriggered(false);
+    setDragOffsetX(0);
+    setIsDragging(false);
+    resetSwipe();
+  };
+
+  const handlePointerCancel = (e: React.PointerEvent<HTMLImageElement>) => {
+    console.log("Cancel", e);
+    setDragStartTriggered(false);
+    setDragOffsetX(0);
+    setIsDragging(false);
+    setCurrentIndex(currentIndex);
   };
 
   // Resetting all image translation to last know "currentIndex"
@@ -99,61 +154,10 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
     }
   };
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLImageElement>) => {
-    const x = e.clientX;
-    const delta = x - dragOffsetX;
-    let sign = 1;
-    if (delta < -75) {
-      if (currentIndex === memory.imageUrls.length - 1) {
-        setDragOffsetX(0);
-        setIsDragging(false);
-        setCurrentIndex(currentIndex);
-        resetSwipe();
-        return;
-      }
-      setCurrentIndex((prev) => prev + 1);
-      sign = 1;
-    }
-    if (delta > 75) {
-      if (currentIndex === 0) {
-        setDragOffsetX(0);
-        setIsDragging(false);
-        setCurrentIndex(currentIndex);
-        resetSwipe();
-        return;
-      }
-      setCurrentIndex((prev) => prev - 1);
-      sign = -1;
-    }
-    if (delta >= -75 && delta <= 75) {
-      setDragOffsetX(0);
-      setIsDragging(false);
-      setCurrentIndex(currentIndex);
-      resetSwipe();
-      return;
-    }
-    if (imageContainerRef.current) {
-      setDragOffsetX(
-        imageContainerRef.current.getBoundingClientRect().width * currentIndex +
-          sign
-      );
-    } else {
-      setDragOffsetX(0);
-    }
-    setIsDragging(false);
-  };
-
-  const handlePointerCancel = (e: React.PointerEvent<HTMLImageElement>) => {
-    console.log("Cancel", e);
-    setDragOffsetX(0);
-    setIsDragging(false);
-    setCurrentIndex(currentIndex);
-  };
-
   return (
     <div
       ref={imageContainerRef}
-      style={{ touchAction: "none" }}
+      style={{ touchAction: "pan-y" }}
       className="flex relative touch-none justify-start items-center overflow-hidden rounded-md shadow-lg"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -200,6 +204,7 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
       )}
       {memory.imageUrls.map((url: string) => (
         <img
+          draggable={false}
           key={url}
           src={url}
           alt={`${url}`}
