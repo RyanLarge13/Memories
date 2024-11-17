@@ -175,19 +175,13 @@ export const getUserFollowersAndTopPost = async (userId: string) => {
     where: { userId: userId },
   });
 
-  console.log(`User information: ${currentUserInfo}`);
-
   const following: string[] | undefined = currentUserInfo?.following;
 
   if (!following || following.length < 1) {
     return { message: "Not following anyone" };
   }
 
-  console.log(following);
-
   let followersArray = [];
-
-  console.log(`Following: ${following}`);
 
   for (let i = 0; i < 10; i++) {
     if (!following[i]) {
@@ -205,8 +199,6 @@ export const getUserFollowersAndTopPost = async (userId: string) => {
       where: { userId: userInfo.id },
       orderBy: { createdAt: "desc" },
     });
-
-    console.log(`Latest Post: ${latestPost}`);
 
     sendableData.latest = latestPost;
 
@@ -423,15 +415,15 @@ const removeAllImages = async (userId: string) => {
 export const deleteAccount = async () => {
   const { userId } = auth();
   if (!userId) {
-    return false;
+    return;
   }
   const removedImages = await removeAllImages(userId);
   if (!removedImages) {
-    return false;
+    return;
   }
   await clerkClient.users.deleteUser(userId);
   await prisma.userSettings.delete({ where: { userId } });
   await prisma.comment.deleteMany({ where: { userId } });
   await prisma.memory.deleteMany({ where: { userId } });
-  return true;
+  return;
 };
