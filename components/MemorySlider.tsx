@@ -2,13 +2,7 @@
 import { likeMemory, unlikeMemory } from "@/useServer";
 import { useUser } from "@clerk/nextjs";
 import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  PointerEventHandler,
-  EventHandler,
-} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
 

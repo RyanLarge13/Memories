@@ -1,5 +1,5 @@
 "use server";
-import { Memory, PrismaClient } from "@prisma/client";
+import { Memory, PrismaClient, UserSettings } from "@prisma/client";
 import { bucket } from "./lib/googleStorage";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -274,13 +274,10 @@ export const updateSettings = async (data: FormData) => {
   };
   const userSettings = await getUserSettings(allFormData.userId);
   if (!userSettings) {
-    const newSettings = await createUserSettings(allFormData);
-    if (!newSettings) {
-      return null;
-    }
+    await createUserSettings(allFormData);
   }
   if (userSettings) {
-    const updatedSettings = await prisma.userSettings.update({
+    await prisma.userSettings.update({
       where: { id: userSettings.id },
       data: {
         location: allFormData.location
@@ -291,11 +288,6 @@ export const updateSettings = async (data: FormData) => {
         link: allFormData.link ? allFormData.link : userSettings.link,
       },
     });
-    if (updatedSettings) {
-      return updatedSettings;
-    } else {
-      return null;
-    }
   }
 };
 
