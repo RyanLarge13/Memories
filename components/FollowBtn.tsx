@@ -35,8 +35,10 @@ const FollowBtn = ({
     <button
       disabled={loading}
       onClick={() => followUnFollowUser()}
-      className={`w-[90%] text-center mt-3 py-1 rounded-md disabled:bg-slate-400 ${
-        isFollowing ? "bg-sky-300" : "bg-green-300 shadow-md"
+      className={`w-[90%] text-center mt-3 py-1 rounded-md disabled:bg-slate-400 duration-200 ${
+        isFollowing
+          ? "bg-sky-300 hover:bg-green-300"
+          : "bg-green-300 hover:bg-sky-300 shadow-md"
       }`}
     >
       {isFollowing ? "UnFollow" : "Follow"}

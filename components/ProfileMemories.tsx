@@ -1,7 +1,13 @@
 "use client";
 import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
 import SimpleMemory from "@/components/SimpleMemory";
-import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import { FaEdit, FaHeart, FaTrash } from "react-icons/fa";
 import { removePost } from "@/useServer";
 import BackDrop from "./BackDrop";
@@ -29,6 +35,21 @@ const ProfileMemories = ({
     Dispatch<SetStateAction<PostModal>>
   ] = useState<PostModal>({ show: false, post: null });
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [indexToScrollTo, setIndexToScrollTo] = useState(0);
+
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    console.log(`Index to scroll to: ${indexToScrollTo}`);
+    if (sectionRef.current) {
+      sectionRef.current.scrollTo({
+        top: indexToScrollTo * 500,
+        behavior: "smooth",
+      });
+    } else {
+      console.log(`Index to scroll to: ${indexToScrollTo}`);
+    }
+  }, [indexToScrollTo]);
 
   useEffect(() => {
     const handleBack = (e: PopStateEvent) => {
@@ -92,11 +113,14 @@ const ProfileMemories = ({
         </div>
       ) : (
         <div className="grid grid-cols-3">
-          {posts.map((post) => (
+          {posts.map((post, index) => (
             <button
               key={post.id}
               onContextMenu={() => setPostModal({ show: true, post: post })}
-              onClick={() => setUserFeed(true)}
+              onClick={() => {
+                setIndexToScrollTo(index);
+                setUserFeed(true);
+              }}
             >
               <SimpleMemory key={post.id} img={post.imageUrls[0]} />
             </button>
@@ -143,7 +167,14 @@ const ProfileMemories = ({
           </div>
         </>
       ) : null}
-      {userFeed ? children : null}
+      {userFeed ? (
+        <section
+          ref={sectionRef}
+          className="fixed inset-0 z-40 bg-white p-3 overflow-y-auto py-10"
+        >
+          {children}
+        </section>
+      ) : null}
     </div>
   );
 };

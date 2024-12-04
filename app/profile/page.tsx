@@ -57,8 +57,12 @@ const Profile = async () => {
         <h1 className="text-2xl font-semibold">{`${user.firstName}${user.lastName}`}</h1>
         <div className="flex justify-center items-center gap-x-2 my-2">
           <p>Posts {posts.length}</p>
-          <p>Followers {settings?.followers.length || 0}</p>
-          <p>Following {settings?.following.length || 0}</p>
+          <a href={`/followers/${user.id}`}>
+            <p>Followers {settings?.followers.length || 0}</p>
+          </a>
+          <a href={`/following/${user.id}`}>
+            <p>Following {settings?.following.length || 0}</p>
+          </a>
         </div>
         <div className="text-left w-full px-5">
           <p className="text-sm text-slate-700">{settings?.title}</p>
@@ -80,11 +84,9 @@ const Profile = async () => {
         </div>
       </div>
       <ProfileMemories posts={posts}>
-        <section className="fixed inset-0 z-40 bg-white p-3 overflow-y-auto py-10">
-          {posts.map((post) => (
-            <Memories key={post.id} memory={post} />
-          ))}
-        </section>
+        {posts.map((post) => (
+          <Memories key={post.id} memory={post} />
+        ))}
       </ProfileMemories>
     </section>
   );

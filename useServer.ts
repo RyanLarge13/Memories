@@ -212,6 +212,7 @@ export const getUsersPosts = async (userId: string) => {
   const usersPosts = await prisma.memory.findMany({
     where: { userId: userId },
     include: { comments: true, likes: true },
+    orderBy: { createdAt: "desc" },
   });
   return usersPosts;
 };
@@ -345,6 +346,60 @@ export const unFollowUser = async (
   return true;
 };
 
+export const getUserFollowers = async (userId: string, appUserId: string) => {
+  const userInfo = await prisma.userSettings.findUnique({ where: { userId } });
+  const followers = userInfo?.followers;
+
+  if (!followers) {
+    return;
+  }
+
+  const userFollowers = await Promise.all(
+    followers.map(async (follower) => {
+      const followerUser = await prisma.userSettings.findUnique({
+        where: { userId: follower },
+      });
+      const clerkFollowerUser = await getUserFromClerk(follower);
+      return {
+        img: clerkFollowerUser?.img || "",
+        username: clerkFollowerUser?.name || "",
+        title: followerUser?.title,
+        id: follower,
+        isFollowing: followerUser?.following.includes(appUserId),
+      };
+    })
+  );
+
+  return userFollowers;
+};
+
+export const getUserFollowing = async (userId: string, appUserId: string) => {
+  const userInfo = await prisma.userSettings.findUnique({ where: { userId } });
+  const following = userInfo?.following;
+
+  if (!following) {
+    return;
+  }
+
+  const userFollowing = await Promise.all(
+    following.map(async (following) => {
+      const followingUser = await prisma.userSettings.findUnique({
+        where: { userId: following },
+      });
+      const clerkFollowingUser = await getUserFromClerk(following);
+      return {
+        img: clerkFollowingUser?.img || "",
+        username: clerkFollowingUser?.name || "",
+        title: followingUser?.title,
+        id: following,
+        isFollowing: followingUser?.followers.includes(appUserId),
+      };
+    })
+  );
+
+  return userFollowing;
+};
+
 export const getLikedPhotos = async (userId: string) => {
   const likedPhotos = await prisma.likedPhoto.findMany({ where: { userId } });
   return likedPhotos;
@@ -418,4 +473,30 @@ export const deleteAccount = async () => {
   await prisma.comment.deleteMany({ where: { userId } });
   await prisma.memory.deleteMany({ where: { userId } });
   return;
+};
+
+export const getMemoryLikes = async (memoryId: string, userId: string) => {
+  const usersWhoLiked = await prisma.likedPhoto.findMany({
+    where: { memoryId },
+    include: { user: true },
+  });
+
+  const currentDbUser = await prisma.userSettings.findUnique({
+    where: { userId },
+  });
+
+  const userFields = await Promise.all(
+    usersWhoLiked.map(async (user) => {
+      const clerkUser = await getUserFromClerk(user.userId);
+      return {
+        img: clerkUser?.img || "",
+        username: clerkUser?.name || "",
+        title: user.user.title,
+        id: user.userId,
+        isFollowing: currentDbUser?.following.includes(user.userId),
+      };
+    })
+  );
+
+  return userFields;
 };

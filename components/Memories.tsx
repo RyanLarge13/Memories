@@ -11,7 +11,13 @@ interface Memory extends MemoryInterface {
   likes: LikedPhoto[];
 }
 
-const Memories = async ({ memory }: { memory: Memory }) => {
+const Memories = async ({
+  memory,
+  index,
+}: {
+  memory: Memory;
+  index?: number;
+}) => {
   const postUser = await getUserFromClerk(memory.userId);
 
   return (
@@ -30,10 +36,10 @@ const Memories = async ({ memory }: { memory: Memory }) => {
       <MemorySlider memory={memory} />
       <div className="mt-2 flex justify-between items-center ga-x-10">
         <p className="text-slate-800 text-lg">{memory.title}</p>
-        <p>
+        <a href={`/likes/${memory.id}`}>
           <span className="font-bold">{memory.likes.length}</span>{" "}
           {memory.likes.length === 1 ? "like" : "likes"}
-        </p>
+        </a>
       </div>
       {memory.location ? (
         <div className="mt-1 text-xs flex justify-start items-start gap-x-1">

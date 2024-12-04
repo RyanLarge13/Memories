@@ -1,7 +1,7 @@
 "use client";
 import { Comment, Memory as MemoryInterface } from "@prisma/client";
 import SimpleMemory from "@/components/SimpleMemory";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 interface Memory extends MemoryInterface {
   comments: Comment[];
@@ -15,6 +15,21 @@ const UserMemories = ({
   children: React.ReactNode;
 }) => {
   const [userFeed, setUserFeed] = useState(false);
+  const [indexToScrollTo, setIndexToScrollTo] = useState(0);
+
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    console.log(`Index to scroll to: ${indexToScrollTo}`);
+    if (sectionRef.current) {
+      sectionRef.current.scrollTo({
+        top: indexToScrollTo * 500,
+        behavior: "smooth",
+      });
+    } else {
+      console.log(`Index to scroll to: ${indexToScrollTo}`);
+    }
+  }, [indexToScrollTo]);
 
   useEffect(() => {
     const handleBack = (e: PopStateEvent) => {
@@ -46,14 +61,27 @@ const UserMemories = ({
         </div>
       ) : (
         <div className="grid grid-cols-3">
-          {posts.map((post) => (
-            <button key={post.id} onClick={() => setUserFeed(true)}>
+          {posts.map((post, index) => (
+            <button
+              key={post.id}
+              onClick={() => {
+                setIndexToScrollTo(index);
+                setUserFeed(true);
+              }}
+            >
               <SimpleMemory key={post.id} img={post.imageUrls[0]} />
             </button>
           ))}
         </div>
       )}
-      {userFeed ? children : null}
+      {userFeed ? (
+        <section
+          ref={sectionRef}
+          className="fixed inset-0 z-40 bg-white p-3 overflow-y-auto py-10"
+        >
+          {children}
+        </section>
+      ) : null}
     </div>
   );
 };

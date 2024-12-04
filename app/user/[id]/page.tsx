@@ -28,7 +28,7 @@ const User = async ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const user = await clerkClient.users.getUser(id);
   const currentAuthUser = await currentUser();
-  if (!id || !user) {
+  if (!id || !user || !currentAuthUser) {
     return <p>No profile found!</p>;
   }
   if (currentAuthUser && currentAuthUser.id === user.id) {
@@ -53,8 +53,12 @@ const User = async ({ params }: { params: { id: string } }) => {
           <h1 className="text-2xl font-semibold">{`${user.firstName}${user.lastName}`}</h1>
           <div className="flex justify-center items-center gap-x-2 my-2">
             <p>Posts {userMemories.length}</p>
-            <p>Followers {userSettings?.followers.length || 0}</p>
-            <p>Following {userSettings?.following.length || 0}</p>
+            <a href={`/followers/${id}`}>
+              <p>Followers {userSettings?.followers.length || 0}</p>
+            </a>
+            <a href={`/following/${id}`}>
+              <p>Following {userSettings?.following.length || 0}</p>
+            </a>
           </div>
           <div className="text-left w-full px-5">
             <p className="text-sm text-slate-700">{userSettings?.title}</p>
@@ -92,11 +96,9 @@ const User = async ({ params }: { params: { id: string } }) => {
           ) : null}
         </div>
         <UserMemories posts={userMemories}>
-          <section className="fixed inset-0 z-40 bg-white p-3 overflow-y-auto py-10">
-            {userMemories.map((post) => (
-              <Memories key={post.id} memory={post} />
-            ))}
-          </section>
+          {userMemories.map((post) => (
+            <Memories key={post.id} memory={post} />
+          ))}
         </UserMemories>
       </section>
     </main>
