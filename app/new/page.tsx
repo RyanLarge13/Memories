@@ -1,7 +1,6 @@
 "use client";
 import { uploadNewMemory } from "@/useServer";
 import { useUser } from "@clerk/nextjs";
-// import { Metadata } from "next";
 import { useRouter } from "next/navigation";
 import React, {
   ChangeEvent,
@@ -13,10 +12,6 @@ import React, {
 import { FaTrash } from "react-icons/fa";
 import { LuImagePlus } from "react-icons/lu";
 import imageCompression from "browser-image-compression";
-// export const metadata: Metadata = {
-//   title: "New Memory",
-//   description: "Create a new memory to share with the world",
-// };
 
 const New = () => {
   const [images, setImages]: [File[], Dispatch<SetStateAction<File[]>>] =
@@ -26,6 +21,7 @@ const New = () => {
   const [location, setLocation] = useState("");
   const [date, setDate] = useState("");
   const [loading, setLoading] = useState(false);
+  const [coverIndex, setCoverIndex] = useState(0);
 
   const { user } = useUser();
   const router = useRouter();
@@ -40,6 +36,7 @@ const New = () => {
       formData.append("date", date);
       formData.append("userId", user.id);
       formData.append("desc", desc);
+      formData.append("cover-index", coverIndex.toString());
       images.forEach((image, index) => {
         formData.append(`images[${index}]`, image);
       });
@@ -97,6 +94,14 @@ const New = () => {
                     className="absolute z-10 top-3 right-3 text-red-400 text-xl"
                   >
                     <FaTrash />
+                  </button>
+                  <button
+                    className={`rounded-md shadow-md w-full py-2 text-center absolute z-10 bottom-3 left-3 right-3 ${
+                      index === coverIndex ? "bg-green-300" : "bg-sky-300"
+                    }`}
+                    onClick={() => setCoverIndex(index)}
+                  >
+                    {index === coverIndex ? "Cover Photo" : "Set As Cover"}
                   </button>
                   <img
                     src={URL.createObjectURL(image)}

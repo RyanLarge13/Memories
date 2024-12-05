@@ -20,6 +20,7 @@ model Memory {
   userId String
   imageUrls String[]
   location String?
+  coverIndex Int @default(0)
   when DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

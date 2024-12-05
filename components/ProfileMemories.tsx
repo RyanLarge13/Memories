@@ -122,7 +122,10 @@ const ProfileMemories = ({
                 setUserFeed(true);
               }}
             >
-              <SimpleMemory key={post.id} img={post.imageUrls[0]} />
+              <SimpleMemory
+                key={post.id}
+                img={post.imageUrls[post.coverIndex || 0]}
+              />
             </button>
           ))}
         </div>

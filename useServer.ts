@@ -1,5 +1,5 @@
 "use server";
-import { Memory, PrismaClient, UserSettings } from "@prisma/client";
+import { Memory, PrismaClient } from "@prisma/client";
 import { bucket } from "./lib/googleStorage";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -12,6 +12,7 @@ export const uploadNewMemory = async (data: FormData) => {
     const userId = data.get("userId") as string;
     const date = data.get("date") as string;
     const location = data.get("location") as string;
+    const coverIndex = data.get("cover-index") as string;
     const fileUrls: string[] = [];
     for (const [_, value] of data.entries()) {
       if (value instanceof File) {
@@ -61,6 +62,7 @@ export const uploadNewMemory = async (data: FormData) => {
           userId,
           title,
           desc,
+          coverIndex: Number(coverIndex),
           when: new Date(date) || new Date(),
           location: location,
           imageUrls: {
