@@ -12,6 +12,7 @@ import React, {
 import { FaTrash } from "react-icons/fa";
 import { LuImagePlus } from "react-icons/lu";
 import imageCompression from "browser-image-compression";
+import StaticSlider from "@/components/StaticSlider";
 
 const New = () => {
   const [images, setImages]: [File[], Dispatch<SetStateAction<File[]>>] =
@@ -84,7 +85,13 @@ const New = () => {
       >
         <label htmlFor="images"></label>
         <div className="flex justify-start items-center gap-x-5 w-full overflow-x-auto mb-10 py-5">
-          {images.length > 0
+          <StaticSlider
+            images={images}
+            setImages={setImages}
+            coverIndex={coverIndex}
+            setCoverIndex={setCoverIndex}
+          />
+          {/* {images.length > 0
             ? images.map((image, index) => (
                 <div key={index} className="relative">
                   <button
@@ -96,7 +103,7 @@ const New = () => {
                     <FaTrash />
                   </button>
                   <button
-                    className={`rounded-md shadow-md w-full py-2 text-center absolute z-10 bottom-3 left-3 right-3 ${
+                    className={`rounded-md duration-200 shadow-md py-2 text-center absolute z-10 bottom-3 left-3 right-3 ${
                       index === coverIndex ? "bg-green-300" : "bg-sky-300"
                     }`}
                     onClick={() => setCoverIndex(index)}
@@ -110,7 +117,7 @@ const New = () => {
                   />
                 </div>
               ))
-            : null}
+            : null} */}
         </div>
         <div className="w-40 h-40 rounded-full bg-slate-300 flex justify-center items-center text-3xl relative">
           <LuImagePlus />

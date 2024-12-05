@@ -34,6 +34,7 @@ const NewComments = ({ memoryId }: { memoryId: string }) => {
       }
     }
     setLoading(false);
+    setNewCommentText("");
   };
 
   return (
