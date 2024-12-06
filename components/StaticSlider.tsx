@@ -147,6 +147,7 @@ const StaticSlider = ({
       {images.map((image: File, index: number) => (
         <>
           <button
+            type="button"
             onClick={() =>
               setImages((prev) => prev.filter((img) => img !== img))
             }
@@ -155,6 +156,7 @@ const StaticSlider = ({
             <FaTrash />
           </button>
           <button
+            type="button"
             className={`rounded-md duration-200 shadow-md py-2 text-center absolute z-10 bottom-3 left-3 right-3 ${
               index === coverIndex ? "bg-green-300" : "bg-sky-300"
             }`}

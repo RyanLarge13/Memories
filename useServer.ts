@@ -3,7 +3,10 @@ import { Memory, PrismaClient } from "@prisma/client";
 import { bucket } from "./lib/googleStorage";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import Validator from "./lib/validator";
+import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
+const validator = new Validator();
 
 export const uploadNewMemory = async (data: FormData) => {
   try {
@@ -150,6 +153,10 @@ export const postNewComment = async (
   memoryId: string,
   comment: string
 ) => {
+  if (!validator.valStr(comment, 3, 250)) {
+    return;
+  }
+
   if (userId) {
     const user = await getUserFromClerk(userId);
     if (user) {
@@ -261,6 +268,61 @@ export const createDefaultSettings = async (userId: string) => {
   return newSettings;
 };
 
+const validateNewSettings = (formData: {
+  userId: string;
+  location: string | null;
+  title: string | null;
+  bio: string | null;
+  link: string | null;
+  following: string[];
+  followers: string[];
+}) => {
+  // Form Data to validate
+  // userId: data.get("id") as string, x
+  // location: data.get("location") as string | null, x
+  // title: data.get("title") as string | null, x
+  // bio: data.get("bio") as string | null, x
+  // link: data.get("link") as string | null, x
+  // following: [] as string[],
+  // followers: [] as string[],
+
+  // valStr method params
+  // string, minLength, maxLength, customRegex, customEscapeMap
+
+  if (
+    !formData.location ||
+    !formData.title ||
+    !formData.bio ||
+    !formData.link
+  ) {
+    return false;
+  }
+
+  if (!validator.valStr(formData.location, 3, 100)) {
+    return false;
+  }
+  if (!validator.valStr(formData.title, 3, 35)) {
+    return false;
+  }
+  if (!validator.valStr(formData.bio, 3, 250)) {
+    return false;
+  }
+  if (
+    !validator.valStr(
+      formData.link,
+      3,
+      100,
+      /^(https?:\/\/)?([\w-]+\.)+[\w-]+(:\d+)?(\/[^\s]*)?$/
+    )
+  ) {
+    return false;
+  }
+
+  // valInt validation params: number, testLength, minSize, maxSize, customRegex
+
+  return true;
+};
+
 export const updateSettings = async (data: FormData) => {
   const username = data.get("username") as string;
   if (username) {
@@ -275,6 +337,9 @@ export const updateSettings = async (data: FormData) => {
     following: [] as string[],
     followers: [] as string[],
   };
+  if (!validateNewSettings(allFormData)) {
+    return;
+  }
   const userSettings = await getUserSettings(allFormData.userId);
   if (!userSettings) {
     await createUserSettings(allFormData);
@@ -501,4 +566,85 @@ export const getMemoryLikes = async (memoryId: string, userId: string) => {
   );
 
   return userFields;
+};
+
+export const getMemoriesByLocation = async (location: string) => {
+  if (!validator.valStr(location, 3, 35)) {
+    return redirect("/");
+  }
+
+  const memories = await prisma.memory.findMany({
+    where: {
+      location: {
+        contains: location,
+        mode: "insensitive",
+      },
+    },
+    include: {
+      comments: true,
+      likes: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!memories) {
+    return;
+  }
+
+  return memories;
+};
+
+export const getMemoriesByUser = async (userName: string) => {
+  if (!validator.valStr(userName, 3, 35)) {
+    return redirect("/");
+  }
+
+  const users = await clerkClient.users.getUserList();
+
+  const user = users.data.find((user) => {
+    const name = `${user.firstName}${user.lastName}`;
+    return name === userName;
+  });
+
+  if (!user) {
+    return;
+  }
+
+  const memories = await prisma.memory.findMany({
+    where: { userId: user.id },
+    include: {
+      comments: true,
+      likes: true,
+    },
+  });
+
+  if (!memories) {
+    return;
+  }
+
+  return memories;
+};
+
+export const getMemoriesByDate = async (date: string) => {
+  if (!validator.valStr(date, 3, 35)) {
+    return redirect("/");
+  }
+
+  const memories = await prisma.memory.findMany({
+    where: {
+      when: date,
+    },
+    include: {
+      likes: true,
+      comments: true,
+    },
+  });
+
+  if (!memories) {
+    return;
+  }
+
+  return memories;
 };

@@ -27,8 +27,6 @@ const Home = async () => {
 
   const following = await getUserFollowersAndTopPost(user.id);
 
-  console.log(following);
-
   return (
     <main className="min-h-screen py-20 flex justify-center items-start">
       {memories.length < 1 ? (

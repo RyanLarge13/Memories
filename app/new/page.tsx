@@ -9,10 +9,10 @@ import React, {
   SetStateAction,
   useState,
 } from "react";
-import { FaTrash } from "react-icons/fa";
 import { LuImagePlus } from "react-icons/lu";
 import imageCompression from "browser-image-compression";
 import StaticSlider from "@/components/StaticSlider";
+import Validator from "@/lib/validator";
 
 const New = () => {
   const [images, setImages]: [File[], Dispatch<SetStateAction<File[]>>] =
@@ -29,6 +29,9 @@ const New = () => {
 
   const createNewMemory = async (e: FormEvent) => {
     e.preventDefault();
+    if (!validateFormData()) {
+      return;
+    }
     setLoading(true);
     if (user) {
       const formData = new FormData();
@@ -56,6 +59,28 @@ const New = () => {
       (document.getElementById("images") as HTMLInputElement).value = "";
       setImages([]);
     }
+  };
+
+  const validateFormData = (): boolean => {
+    const validator = new Validator();
+
+    // valStr method params
+    // string, minLength, maxLength, customRegex, customEscapeMap
+    if (!validator.valStr(title, 3, 35)) {
+      return false;
+    }
+    if (!validator.valStr(desc, 3, 250)) {
+      return false;
+    }
+    if (!validator.valStr(location, 3, 100)) {
+      return false;
+    }
+    // valInt validation params: number, testLength, minSize, maxSize, customRegex
+    if (!validator.valInt(coverIndex, false)) {
+      return false;
+    }
+
+    return true;
   };
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -91,33 +116,6 @@ const New = () => {
             coverIndex={coverIndex}
             setCoverIndex={setCoverIndex}
           />
-          {/* {images.length > 0
-            ? images.map((image, index) => (
-                <div key={index} className="relative">
-                  <button
-                    onClick={() =>
-                      setImages((prev) => prev.filter((img) => img !== img))
-                    }
-                    className="absolute z-10 top-3 right-3 text-red-400 text-xl"
-                  >
-                    <FaTrash />
-                  </button>
-                  <button
-                    className={`rounded-md duration-200 shadow-md py-2 text-center absolute z-10 bottom-3 left-3 right-3 ${
-                      index === coverIndex ? "bg-green-300" : "bg-sky-300"
-                    }`}
-                    onClick={() => setCoverIndex(index)}
-                  >
-                    {index === coverIndex ? "Cover Photo" : "Set As Cover"}
-                  </button>
-                  <img
-                    src={URL.createObjectURL(image)}
-                    alt={`${index}`}
-                    className="object-cover w-80 min-w-80 max-w-80 min-h-80 max-h-80 h-80 rounded-lg shadow-md"
-                  />
-                </div>
-              ))
-            : null} */}
         </div>
         <div className="w-40 h-40 rounded-full bg-slate-300 flex justify-center items-center text-3xl relative">
           <LuImagePlus />

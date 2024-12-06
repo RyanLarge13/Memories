@@ -42,17 +42,30 @@ const Memories = async ({
         </a>
       </div>
       {memory.location ? (
-        <div className="mt-1 text-xs flex justify-start items-start gap-x-1">
+        <a
+          href={`/post/location/${memory.location}`}
+          className="mt-1 text-xs flex justify-start items-start gap-x-1"
+        >
           <FaLocationPin /> <p>{memory.location}</p>
-        </div>
+        </a>
       ) : null}
-      <p className="text-slate-500">{memory.desc}</p>
-      <p className="text-sm font-semibold mt-2">
+      <p className="text-xs mb-1 text-gray-400 font-semibold">
+        Posted on:{" "}
         {new Date(memory.createdAt).toLocaleDateString("en-US", {
           day: "numeric",
           month: "short",
         })}
       </p>
+      <p className="text-slate-500">{memory.desc}</p>
+      <a
+        href={`/post/date/${memory.when}`}
+        className="text-sm font-semibold my-2 block"
+      >
+        {new Date(memory.when).toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "short",
+        })}
+      </a>
       <Comments comments={memory.comments} />
       <NewComments memoryId={memory.id} />
     </div>
