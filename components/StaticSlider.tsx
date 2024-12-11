@@ -49,7 +49,7 @@ const StaticSlider = ({
       const children = imageContainerRef.current.children;
       for (let i = 0; i < children.length; i++) {
         const child = children[i] as HTMLImageElement;
-        if (child.tagName === "IMG") {
+        if (child.tagName === "DIV" && child.classList.contains("draggable")) {
           child.style.transform = `translateX(${
             e.clientX -
             dragOffsetX -
@@ -103,7 +103,7 @@ const StaticSlider = ({
       const children = imageContainerRef.current.children;
       for (let i = 0; i < children.length; i++) {
         const child = children[i] as HTMLImageElement;
-        if (child.tagName === "IMG") {
+        if (child.tagName === "DIV" && child.classList.contains("draggable")) {
           child.style.transform = `translateX(${-(
             currentIndex *
             imageContainerRef.current.getBoundingClientRect().width
@@ -145,41 +145,43 @@ const StaticSlider = ({
         </div>
       ) : null}
       {images.map((image: File, index: number) => (
-        <>
+        <div
+          style={{
+            transform: imageContainerRef.current
+              ? `translateX(${-(
+                  currentIndex *
+                  imageContainerRef.current.getBoundingClientRect().width
+                )}px)`
+              : `none`,
+          }}
+          className="h-[403px] aspect-square rounded-lg shadow-md duration-300 select-none draggable"
+        >
           <button
             type="button"
-            onClick={() =>
-              setImages((prev) => prev.filter((img) => img !== img))
-            }
-            className="absolute z-10 top-3 right-3 text-red-400 text-xl"
-          >
-            <FaTrash />
-          </button>
-          <button
-            type="button"
-            className={`rounded-md duration-200 shadow-md py-2 text-center absolute z-10 bottom-3 left-3 right-3 ${
+            className={`rounded-md duration-200 shadow-md py-2 text-center absolute z-10 bottom-14 left-3 right-3 ${
               index === coverIndex ? "bg-green-300" : "bg-sky-300"
             }`}
             onClick={() => setCoverIndex(index)}
           >
             {index === coverIndex ? "Cover Photo" : "Set As Cover"}
           </button>
+          <button
+            type="button"
+            onClick={() =>
+              setImages((prev) => prev.filter((img) => img !== img))
+            }
+            className="rounded-md duration-200 shadow-md py-[11px] text-center absolute z-10 bottom-3 bg-red-300 flex justify-center items-center left-3 right-3"
+          >
+            <FaTrash />
+          </button>
           <img
             draggable={false}
             key={index}
             src={URL.createObjectURL(image)}
             alt={`${image}`}
-            style={{
-              transform: imageContainerRef.current
-                ? `translateX(${-(
-                    currentIndex *
-                    imageContainerRef.current.getBoundingClientRect().width
-                  )}px)`
-                : `none`,
-            }}
-            className="object-cover w-full h-full aspect-square rounded-lg shadow-md duration-300 select-none"
+            className="object-cover h-full w-full rounded-lg select-none"
           />
-        </>
+        </div>
       ))}
       <div className="absolute bottom-0 right-0 left-0 py-2 px-3 flex justify-start items-center gap-3">
         {images.map((_, index: number) => (
