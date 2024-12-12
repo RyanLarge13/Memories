@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FaArrowLeft, FaArrowRight, FaTrash } from "react-icons/fa";
 
 const StaticSlider = ({
@@ -19,6 +25,16 @@ const StaticSlider = ({
   const [dragOffsetY, setDragOffsetY] = useState(0);
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResizeTrigger = () => {
+      setCurrentIndex(0);
+    };
+    window.addEventListener("resize", handleResizeTrigger);
+    return () => {
+      window.removeEventListener("resize", handleResizeTrigger);
+    };
+  }, []);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLImageElement>) => {
     const x = e.clientX;
@@ -146,6 +162,7 @@ const StaticSlider = ({
       ) : null}
       {images.map((image: File, index: number) => (
         <div
+          key={index}
           style={{
             transform: imageContainerRef.current
               ? `translateX(${-(
@@ -154,7 +171,7 @@ const StaticSlider = ({
                 )}px)`
               : `none`,
           }}
-          className="h-[403px] aspect-square rounded-lg shadow-md duration-300 select-none draggable"
+          className="aspect-square min-w-full rounded-lg shadow-md duration-300 select-none draggable"
         >
           <button
             type="button"
@@ -179,7 +196,7 @@ const StaticSlider = ({
             key={index}
             src={URL.createObjectURL(image)}
             alt={`${image}`}
-            className="object-cover h-full w-full rounded-lg select-none"
+            className="object-cover w-full h-full rounded-lg select-none"
           />
         </div>
       ))}

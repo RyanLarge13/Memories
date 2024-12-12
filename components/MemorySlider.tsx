@@ -32,6 +32,16 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
     }
   }, [currentUser.user]);
 
+  useEffect(() => {
+    const handleResizeTrigger = () => {
+      setCurrentIndex(0);
+    };
+    window.addEventListener("resize", handleResizeTrigger);
+    return () => {
+      window.removeEventListener("resize", handleResizeTrigger);
+    };
+  }, []);
+
   const likePhoto = async () => {
     setLikedLoading(true);
     if (currentUser.user) {
