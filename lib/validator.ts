@@ -20,14 +20,17 @@ class Validator {
   ): boolean {
     string.trim();
     if (typeof string !== "string") {
+      console.log("Does not equal string");
       return false;
     }
     const stringLength: number = string.length;
     if (stringLength < minLength || stringLength > maxLength) {
+      console.log("string length params failed");
       return false;
     }
-    const nonDangerousPatterns = customRegex.test(string);
-    if (!nonDangerousPatterns) {
+    const dangerousPatterns = string.match(customRegex);
+    if (dangerousPatterns) {
+      console.log("Regex failed!");
       return false;
     }
     string.replace(

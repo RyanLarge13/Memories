@@ -80,7 +80,7 @@ const New = () => {
       return false;
     }
 
-    return true;
+    return false;
   };
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
