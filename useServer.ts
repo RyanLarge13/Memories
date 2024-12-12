@@ -632,9 +632,11 @@ export const getMemoriesByDate = async (date: string) => {
     return redirect("/");
   }
 
+  const validDateStr = new Date(date);
+
   const memories = await prisma.memory.findMany({
     where: {
-      when: date,
+      when: validDateStr,
     },
     include: {
       likes: true,
