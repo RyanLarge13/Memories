@@ -12,7 +12,7 @@ interface Memory extends MemoryInterface {
 }
 
 const MemorySlider = ({ memory }: { memory: Memory }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(memory.coverIndex || 0);
   const [likedLoading, setLikedLoading] = useState(false);
   const [currentlyLiked, setCurrentlyLiked] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -31,16 +31,6 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
       setCurrentlyLiked(hasLike);
     }
   }, [currentUser.user]);
-
-  useEffect(() => {
-    const handleResizeTrigger = () => {
-      setCurrentIndex(0);
-    };
-    window.addEventListener("resize", handleResizeTrigger);
-    return () => {
-      window.removeEventListener("resize", handleResizeTrigger);
-    };
-  }, []);
 
   const likePhoto = async () => {
     setLikedLoading(true);
