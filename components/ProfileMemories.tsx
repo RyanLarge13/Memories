@@ -116,7 +116,10 @@ const ProfileMemories = ({
           {posts.map((post, index) => (
             <button
               key={post.id}
-              onContextMenu={() => setPostModal({ show: true, post: post })}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                setPostModal({ show: true, post: post });
+              }}
               onClick={() => {
                 setIndexToScrollTo(index);
                 setUserFeed(true);
@@ -134,7 +137,7 @@ const ProfileMemories = ({
         <>
           <BackDrop setState={closeOpenModal} />
           <div className="fixed bottom-0 right-0 left-0 bg-white z-40 rounded-t-md p-3">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-2">
               <button onClick={() => {}}>
                 <FaEdit />
               </button>

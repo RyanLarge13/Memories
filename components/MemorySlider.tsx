@@ -33,16 +33,6 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
     }
   }, [currentUser.user]);
 
-  useEffect(() => {
-    const handleResizeTrigger = () => {
-      setCurrentIndex(0);
-    };
-    window.addEventListener("resize", handleResizeTrigger);
-    return () => {
-      window.removeEventListener("resize", handleResizeTrigger);
-    };
-  }, []);
-
   const likePhoto = async () => {
     setLikedLoading(true);
     if (currentUser.user) {
@@ -223,7 +213,7 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
                 )}px)`
               : `none`,
           }}
-          className="object-cover w-full h-full aspect-square rounded-lg shadow-md duration-300 select-none"
+          className="object-cover min-w-full aspect-square rounded-lg shadow-md duration-300 select-none"
         />
       ))}
       <div className="absolute bottom-0 right-0 left-0 py-2 px-3 flex justify-start items-center gap-3">
