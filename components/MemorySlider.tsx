@@ -1,10 +1,11 @@
 "use client";
+import React, { useEffect, useRef, useState } from "react";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { IoHeart, IoHeartOutline } from "react-icons/io5";
+
 import { likeMemory, unlikeMemory } from "@/useServer";
 import { useUser } from "@clerk/nextjs";
 import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
-import React, { useState, useRef, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { IoHeart, IoHeartOutline } from "react-icons/io5";
 
 interface Memory extends MemoryInterface {
   comments: Comment[];
@@ -12,7 +13,7 @@ interface Memory extends MemoryInterface {
 }
 
 const MemorySlider = ({ memory }: { memory: Memory }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(memory.coverIndex || 0);
   const [likedLoading, setLikedLoading] = useState(false);
   const [currentlyLiked, setCurrentlyLiked] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -162,7 +163,7 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
     <div
       ref={imageContainerRef}
       style={{ touchAction: "pan-y" }}
-      className="flex relative touch-none justify-start items-center overflow-hidden rounded-md shadow-lg"
+      className="flex relative touch-none aspect-square justify-start items-center overflow-hidden rounded-md shadow-lg"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -209,6 +210,8 @@ const MemorySlider = ({ memory }: { memory: Memory }) => {
       {memory.imageUrls.map((url: string) => (
         <img
           draggable={false}
+          width={500}
+          height={500}
           key={url}
           src={url}
           alt={`${url}`}
