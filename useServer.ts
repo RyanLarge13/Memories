@@ -1,10 +1,13 @@
 "use server";
-import { Memory, PrismaClient } from "@prisma/client";
-import { bucket } from "./lib/googleStorage";
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import Validator from "./lib/validator";
 import { redirect } from "next/navigation";
+
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
+import { Memory, PrismaClient } from "@prisma/client";
+
+import { bucket } from "./lib/googleStorage";
+import Validator from "./lib/validator";
+
 const prisma = new PrismaClient();
 const validator = new Validator();
 
@@ -648,5 +651,15 @@ export const getMemoriesByDate = async (date: string) => {
     return;
   }
 
+  return memories;
+};
+
+export const getPosts = async (pageNumber: number) => {
+  const memories = await prisma.memory.findMany({
+    orderBy: [{ createdAt: "desc" }],
+    skip: pageNumber * 5,
+    take: 5,
+    include: { comments: true, likes: true },
+  });
   return memories;
 };

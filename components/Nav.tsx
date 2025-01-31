@@ -1,8 +1,8 @@
-import React from "react";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { headers } from "next/headers";
 import { FaCog, FaImages, FaPlus } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
-import { headers } from "next/headers";
+
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 const Nav = () => {
   // Setting x-pathname header in root/middleware.ts
@@ -23,7 +23,9 @@ const Nav = () => {
           </a>
           <a
             href="/"
-            className="px-10 hover:shadow-lg duration-300 hidden md:block"
+            className={`hidden py-3 md:block px-10 duration-200 hover:text-sky-700 ${
+              path === "/" ? "text-sky-400" : "text-black"
+            }`}
           >
             Feed
           </a>
@@ -39,7 +41,9 @@ const Nav = () => {
           </a>
           <a
             href="/profile"
-            className="px-10 py-3 hover:shadow-lg duration-300 hidden md:block"
+            className={`hidden py-3 md:block px-10 duration-200 hover:text-sky-700 ${
+              path === "/profile" ? "text-sky-400" : "text-black"
+            }`}
           >
             Profile
           </a>
@@ -55,7 +59,9 @@ const Nav = () => {
           </a>
           <a
             href="/settings"
-            className="px-10 py-3 hover:shadow-lg duration-300 hidden md:block"
+            className={`hidden py-3 md:block px-10 duration-200 hover:text-sky-700 ${
+              path === "/settings" ? "text-sky-400" : "text-black"
+            }`}
           >
             Settings
           </a>
@@ -71,7 +77,9 @@ const Nav = () => {
           </a>
           <a
             href="/new"
-            className="px-10 py-3 hover:shadow-lg duration-300 hidden md:block"
+            className={`hidden py-3 md:block px-10 duration-200 hover:text-sky-700 ${
+              path === "/new" ? "text-sky-400" : "text-black"
+            }`}
           >
             New
           </a>

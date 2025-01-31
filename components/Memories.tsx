@@ -1,24 +1,31 @@
-import React from "react";
-import { getUserFromClerk } from "@/useServer";
-import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
+"use client";
+
+import { useEffect, useState } from "react";
 import { FaLocationPin } from "react-icons/fa6";
-import Comments from "@/components/Comments";
+
 import MemorySlider from "@/components/MemorySlider";
 import NewComments from "@/components/NewComments";
+import { getUserFromClerk } from "@/useServer";
+import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
+
+import Comments from "./Comments";
 
 interface Memory extends MemoryInterface {
   comments: Comment[];
   likes: LikedPhoto[];
 }
 
-const Memories = async ({
-  memory,
-  index,
-}: {
-  memory: Memory;
-  index?: number;
-}) => {
-  const postUser = await getUserFromClerk(memory.userId);
+const Memories = ({ memory }: { memory: Memory; index?: number }) => {
+  const [postUser, setPostUser] = useState(null);
+
+  useEffect(() => {
+    getPostUser();
+  }, []);
+
+  const getPostUser = async () => {
+    const user = await getUserFromClerk(memory.userId);
+    setPostUser(user);
+  };
 
   return (
     <div className="my-5 w-full">

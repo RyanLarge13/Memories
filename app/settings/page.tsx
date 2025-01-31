@@ -1,9 +1,9 @@
+import { Metadata } from "next";
+import { FaInfo } from "react-icons/fa";
+
 import SubmitButton from "@/components/SubmitButton";
 import { getUserSettings, updateSettings } from "@/useServer";
 import { currentUser } from "@clerk/nextjs/server";
-import { Metadata } from "next";
-import React from "react";
-import { FaInfo } from "react-icons/fa";
 
 export const metadata: Metadata = {
   title: "Memory Settings",
@@ -19,7 +19,7 @@ const Settings = async () => {
   const userSettings = await getUserSettings(user.id);
 
   return (
-    <main>
+    <main className="md:px-10 lg:px-40 xl:px-60 md:pt-20">
       <section className="pt-20 px-3">
         <h1 className="text-xl mb019">Settings</h1>
         <p className="text-sm mt-3 flex justify-start items-center">
