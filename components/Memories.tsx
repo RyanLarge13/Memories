@@ -16,7 +16,10 @@ interface Memory extends MemoryInterface {
 }
 
 const Memories = ({ memory }: { memory: Memory; index?: number }) => {
-  const [postUser, setPostUser] = useState(null);
+  const [postUser, setPostUser] = useState<{
+    img: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     getPostUser();
@@ -35,7 +38,7 @@ const Memories = ({ memory }: { memory: Memory; index?: number }) => {
       >
         <p className="font-semibold">@{postUser?.name}</p>
         <img
-          src={postUser?.img}
+          src={postUser?.img || ""}
           alt="user"
           className="w-7 h-7 rounded-full object-contain select-none"
         />

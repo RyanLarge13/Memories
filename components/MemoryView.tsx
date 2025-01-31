@@ -4,11 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { BiLoader } from "react-icons/bi";
 
 import { getPosts } from "@/useServer";
+import { Comment, LikedPhoto, Memory as MemoryInterface } from "@prisma/client";
 
 import Memories from "./Memories";
 
+interface Memory extends MemoryInterface {
+  comments: Comment[];
+  likes: LikedPhoto[];
+}
+
 const MemoryView = () => {
-  const [memories, setMemories] = useState([]);
+  const [memories, setMemories] = useState<Memory[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +27,6 @@ const MemoryView = () => {
     }
 
     setLoading(true);
-    console.log("calling");
     const newMemories = await getPosts(page);
     setPage((prev) => prev + 1);
     setMemories((prev) => [...prev, ...newMemories]);
