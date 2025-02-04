@@ -59,9 +59,11 @@ const MemoryView = () => {
       {memories.map((memory) => (
         <Memories key={memory.id} memory={memory} />
       ))}
-      <div ref={loaderRef} className="mt-10">
-        {loading ? <BiLoader className="animate-spin" /> : null}
-      </div>
+      {!end ? (
+        <div ref={loaderRef} className="mt-10">
+          {loading ? <BiLoader className="animate-spin" /> : null}
+        </div>
+      ) : null}
     </section>
   );
 };
