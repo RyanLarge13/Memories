@@ -661,5 +661,8 @@ export const getPosts = async (pageNumber: number) => {
     take: 5,
     include: { comments: true, likes: true },
   });
-  return memories;
+
+  const end = memories.length < 5;
+
+  return { memories: memories, end: end };
 };

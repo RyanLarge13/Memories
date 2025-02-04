@@ -17,19 +17,23 @@ const MemoryView = () => {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [end, setEnd] = useState(false);
 
   const loaderRef = useRef(null);
 
   // Function to fetch more memories
   const fetchMoreMemories = async (): Promise<void> => {
-    if (loading) {
+    if (loading || end) {
       return; // Prevent multiple fetches while already loading
     }
 
     setLoading(true);
     const newMemories = await getPosts(page);
+    if (newMemories.end) {
+      setEnd(true);
+    }
     setPage((prev) => prev + 1);
-    setMemories((prev) => [...prev, ...newMemories]);
+    setMemories((prev) => [...prev, ...newMemories.memories]);
     setLoading(false);
   };
 
