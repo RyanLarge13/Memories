@@ -1,8 +1,9 @@
 "use client";
+import React, { Dispatch, SetStateAction, useState } from "react";
+
 import { postNewComment } from "@/useServer";
 import { useUser } from "@clerk/nextjs";
 import { Comment } from "@prisma/client";
-import React, { SetStateAction, useState, Dispatch } from "react";
 
 const NewComments = ({ memoryId }: { memoryId: string }) => {
   const [newComments, setNewComments]: [
@@ -70,7 +71,7 @@ const NewComments = ({ memoryId }: { memoryId: string }) => {
           placeholder="comment"
         />
         <button
-          disabled={loading}
+          disabled={loading || newCommentText === ""}
           onClick={() => postComment()}
           className="px-1 py-2 bg-transparent disabled:text-slate-300 duration-200"
         >

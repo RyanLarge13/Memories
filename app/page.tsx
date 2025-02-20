@@ -26,7 +26,7 @@ const Home = async () => {
           )}
         </div>
       </div>
-      <section className="flex max-w-[750px] flex-col lg:basis-3/5 items-center justify-center p-3">
+      <section className="flex max-w-[750px] flex-col lg:basis-3/5 items-center justify-center">
         <MemoryView />
       </section>
       <div className="hidden basis-1/5 lg:block min-w-[25%] sticky top-20 p-10">

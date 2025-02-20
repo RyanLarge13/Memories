@@ -55,7 +55,7 @@ const MemoryView = () => {
   }, [loading]); // Only re-run when loading state changes
 
   return (
-    <section className="flex max-w-[750px] flex-col basis-3/5 items-center justify-center p-3 min-h-screen">
+    <section className="flex max-w-[750px] flex-col basis-3/5 items-center justify-center min-h-screen">
       {memories.map((memory) => (
         <Memories key={memory.id} memory={memory} />
       ))}
